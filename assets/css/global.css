@@ -1,0 +1,224 @@
+:root {
+  --black: #000000;
+  --black-0_38: #00000061;
+  --primary: #0a2647;
+  --poseidon: #163b63;
+  --poseidon-100: #243b53;
+  --poseidon-200: #5f7184;
+  --poseidon-300: #c7d5e3;
+  --poseidon-400: #d9e2ec;
+  --poseidon-500: #415a75;
+  --poseidon-600: #687888;
+  --white: #ffffff;
+  --white-100: #e8f0f7;
+  --white-200: #eaf1f7;
+  --white-300: #f6f8fa;
+  --white-400: #f5f8fc;
+  --white-500: #e0f2ee;
+  --green: #399918;
+  --green-100: #65b749;
+  --green-26: #39991842;
+  --red: #ff0000;
+  --red-100: #f63131;
+  --red-200: #ffe4e4;
+  --transparent: transparent;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.2;
+  font-family: var(--);
+  color: var(--poseidon-100);
+  background-color: var(--white-100);
+}
+
+@media (max-width: 575px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+.body-hidden {
+  overflow: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 20px;
+  margin-inline: auto;
+}
+
+.authentication-container {
+  max-width: 546px;
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding-inline: 16px;
+  }
+}
+
+.text-green {
+  color: var(--green);
+}
+
+.text-red {
+  color: var(--red);
+}
+
+.h1,
+h1,
+.h2,
+h2,
+.h3,
+h3,
+.h4,
+h4,
+.h5,
+h5,
+.h6,
+h6 {
+  font-weight: 400;
+}
+
+.h1,
+h1:not(:where(.h2, .h3, .h4, .h5, .h6)) {
+  font-size: 26px;
+  line-height: 1.5;
+}
+
+.h2,
+h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
+  font-size: 22px;
+}
+@media (max-width: 575px) {
+  .h2,
+  h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
+    font-size: 20px;
+  }
+}
+
+.h3,
+h3:not(:where(.h1, .h2, .h4, .h5, .h6)) {
+  font-size: 20px;
+}
+@media (max-width: 575px) {
+  .h3,
+  h3:not(:where(.h1, .h2, .h4, .h5, .h6)) {
+    font-size: 18px;
+  }
+}
+
+.h4,
+h4:not(:where(.h1, .h2, .h3, .h5, .h6)) {
+  font-size: 18px;
+}
+@media (max-width: 575px) {
+  .h4,
+  h4:not(:where(.h1, .h2, .h3, .h5, .h6)) {
+    font-size: 16px;
+  }
+}
+
+.h5,
+h5:not(:where(.h1, .h2, .h3, .h4, .h6)) {
+  font-size: 14px;
+}
+
+.h6,
+h6:not(:where(.h1, .h2, .h3, .h4, .h5)) {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+a {
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  -webkit-user-drag: none;
+}
+
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+svg {
+  display: block;
+}
+
+ul,
+ol {
+  list-style-type: none;
+}
+
+button {
+  display: block;
+  background-color: var(--transparent);
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: inherit;
+  background-color: var(--transparent);
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-size: 16px;
+  line-height: 1.5;
+  text-transform: capitalize;
+  color: var(--poseidon-200);
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--poseidon-200);
+}
+
+select[required].nice-select-search ~ .nice-select,
+select[required] {
+  display: block !important;
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+}
