@@ -1,0 +1,78 @@
+.main-wrapper {
+  width: 100%;
+  max-width: 670px;
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+  border-radius: 26px;
+  box-shadow:
+    0 1px 2px 0 var(--black-73),
+    0 0 0 1px var(--black-73);
+  background-color: var(--white);
+  padding: 40px;
+  overflow-x: hidden;
+}
+
+.form-step {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  gap: 38px;
+}
+
+.form-step.active {
+  display: flex;
+  animation: formShow 0.32s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+}
+
+@keyframes formShow {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.form-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-description {
+  color: var(--grey);
+}
+
+.form-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.input-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gender-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gender-stack {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-btn-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}

@@ -20,6 +20,165 @@
 
 <body>
 
+    <section class="main-wrapper">
+        <!-- <div class="form-step-counter"></div> -->
+        <div class="form-step-wrapper">
+            <div class="form-step form-step-one">
+                <div class="form-title-wrapper">
+                    <h2 class="form-title">Tell us about yourself</h2>
+                    <p class="form-description">Enter your basic personal information to get started.</p>
+                </div>
+                <form class="form-wrapper">
+                    <div class="input-stack">
+                        <label class="input-label" for="first-name">First Name</label>
+                        <input class="input-field" type="text" name="first-name" id="first-name" placeholder="Enter your first name" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="last-name">Last Name</label>
+                        <input class="input-field" type="text" name="last-name" id="last-name" placeholder="Enter your last name" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="email">Email</label>
+                        <input class="input-field" type="email" name="email" id="email" placeholder="Enter your email address" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="phone">Phone Number</label>
+                        <input class="input-field" type="number" name="phone" id="phone" placeholder="Enter your phone number" minlength="10" maxlength="10" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="date-of-birth">Date of Birth</label>
+                        <input class="input-field" type="date" name="date-of-birth" id="date-of-birth" placeholder="Select your date of birth" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="nationality">Nationality</label>
+                        <select class="input-field" name="nationality" id="nationality" required>
+                            <option value="" selected disabled>Select your nationality</option>
+                            <option value="australia">Australia</option>
+                            <option value="brazil">Brazil</option>
+                            <option value="canada">Canada</option>
+                            <option value="china">China</option>
+                            <option value="egypt">Egypt</option>
+                            <option value="germany">Germany</option>
+                            <option value="india">India</option>
+                            <option value="italy">Italy</option>
+                            <option value="japan">Japan</option>
+                            <option value="mexico">Mexico</option>
+                            <option value="nigeria">Nigeria</option>
+                            <option value="russia">Russia</option>
+                            <option value="spain">Spain</option>
+                            <option value="united-kingdom">United Kingdom</option>
+                            <option value="united-states">United States</option>
+                        </select>
+                    </div>
+                    <div class="column-span-2 input-stack">
+                        <label class="input-label" for="gender">Gender</label>
+                        <div class="gender-wrapper">
+                            <label class="gender-stack" for="male">
+                                <input class="primary-radio" type="radio" name="gender" id="male" checked>
+                                Male
+                            </label>
+                            <label class="gender-stack" for="female">
+                                <input class="primary-radio" type="radio" name="gender" id="female">
+                                Female
+                            </label>
+                            <label class="gender-stack" for="other">
+                                <input class="primary-radio" type="radio" name="gender" id="other">
+                                Other
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-step form-step-two active">
+                <div class="form-title-wrapper">
+                    <h2 class="form-title">Employment Details</h2>
+                    <p class="form-description">Tell us about your current employment or education status.</p>
+                </div>
+                <form class="form-wrapper">
+                    <div class="input-stack">
+                        <label class="input-label" for="first-name">What is your current status?</label>
+                        <select class="input-field" name="nationality" id="nationality" required>
+                            <option value="" selected disabled>Select your nationality</option>
+                            <option value="australia">Australia</option>
+                            <option value="brazil">Brazil</option>
+                        </select>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="last-name">Last Name</label>
+                        <input class="input-field" type="text" name="last-name" id="last-name" placeholder="Enter your last name" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="email">Email</label>
+                        <input class="input-field" type="email" name="email" id="email" placeholder="Enter your email address" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="phone">Phone Number</label>
+                        <input class="input-field" type="number" name="phone" id="phone" placeholder="Enter your phone number" minlength="10" maxlength="10" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="date-of-birth">Date of Birth</label>
+                        <input class="input-field" type="date" name="date-of-birth" id="date-of-birth" placeholder="Select your date of birth" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="nationality">Nationality</label>
+                        <select class="input-field" name="nationality" id="nationality" required>
+                            <option value="" selected disabled>Select your nationality</option>
+                            <option value="australia">Australia</option>
+                            <option value="brazil">Brazil</option>
+                            <option value="canada">Canada</option>
+                            <option value="china">China</option>
+                            <option value="egypt">Egypt</option>
+                            <option value="germany">Germany</option>
+                            <option value="india">India</option>
+                            <option value="italy">Italy</option>
+                            <option value="japan">Japan</option>
+                            <option value="mexico">Mexico</option>
+                            <option value="nigeria">Nigeria</option>
+                            <option value="russia">Russia</option>
+                            <option value="spain">Spain</option>
+                            <option value="united-kingdom">United Kingdom</option>
+                            <option value="united-states">United States</option>
+                        </select>
+                    </div>
+                    <div class="column-span-2 input-stack">
+                        <label class="input-label" for="gender">Gender</label>
+                        <div class="gender-wrapper">
+                            <label class="gender-stack" for="male">
+                                <input class="primary-radio" type="radio" name="gender" id="male" checked>
+                                Male
+                            </label>
+                            <label class="gender-stack" for="female">
+                                <input class="primary-radio" type="radio" name="gender" id="female">
+                                Female
+                            </label>
+                            <label class="gender-stack" for="other">
+                                <input class="primary-radio" type="radio" name="gender" id="other">
+                                Other
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="form-btn-wrapper">
+            <button class="secondary-btn" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon lucide lucide-move-left preview-icon">
+                    <path d="M6 8L2 12L6 16" />
+                    <path d="M2 12H22" />
+                </svg>
+                <span>Back</span>
+            </button>
+            <button class="primary-btn" type="button">
+                <span>Continue</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon lucide lucide-move-right preview-icon">
+                    <path d="M18 8L22 12L18 16" />
+                    <path d="M2 12H22" />
+                </svg>
+            </button>
+        </div>
+    </section>
+
     <!-- Nice select js -->
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/jquery.nice-select.js"></script>
