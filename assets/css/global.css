@@ -1,27 +1,31 @@
 :root {
+  /* Color */
   --black: #000000;
-  --black-0_38: #00000061;
-  --primary: #0a2647;
-  --poseidon: #163b63;
-  --poseidon-100: #243b53;
-  --poseidon-200: #5f7184;
-  --poseidon-300: #c7d5e3;
-  --poseidon-400: #d9e2ec;
-  --poseidon-500: #415a75;
-  --poseidon-600: #687888;
   --white: #ffffff;
-  --white-100: #e8f0f7;
-  --white-200: #eaf1f7;
-  --white-300: #f6f8fa;
-  --white-400: #f5f8fc;
-  --white-500: #e0f2ee;
-  --green: #399918;
-  --green-100: #65b749;
-  --green-26: #39991842;
-  --red: #ff0000;
-  --red-100: #f63131;
-  --red-200: #ffe4e4;
+  --white-100: #f5f5f5;
+  --grey: #666;
+  --orange: #ff4b0f;
+  --green: #16a34a;
+  --red: #ef4444;
+  --yellow: #f59e0b;
   --transparent: transparent;
+
+  /* Font */
+  --font-dm-serif: "DM Serif Display", serif;
+  --font-chivo-mono: "Chivo Mono", monospace;
+  --font-inter: "Inter", sans-serif;
+
+  /* Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --line-heights-1_15: 1.15;
+  --line-heights-1_25: 1.25;
+  --line-heights-1_5: 1.5;
+  --line-heights-1_6: 1.6;
 }
 
 * {
@@ -33,9 +37,13 @@
 body {
   font-size: 16px;
   line-height: 1.2;
-  font-family: var(--);
-  color: var(--poseidon-100);
+  font-family: var(--font-inter);
+  color: var(--black);
   background-color: var(--white-100);
+  background-image: url(../images/dot-layer.webp);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 575px) {
@@ -65,14 +73,6 @@ body {
   }
 }
 
-.text-green {
-  color: var(--green);
-}
-
-.text-red {
-  color: var(--red);
-}
-
 .h1,
 h1,
 .h2,
@@ -90,13 +90,13 @@ h6 {
 
 .h1,
 h1:not(:where(.h2, .h3, .h4, .h5, .h6)) {
-  font-size: 26px;
+  font-size: 40px;
   line-height: 1.5;
 }
 
 .h2,
 h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
-  font-size: 22px;
+  font-size: 32px;
 }
 @media (max-width: 575px) {
   .h2,
@@ -107,7 +107,7 @@ h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
 
 .h3,
 h3:not(:where(.h1, .h2, .h4, .h5, .h6)) {
-  font-size: 20px;
+  font-size: 28px;
 }
 @media (max-width: 575px) {
   .h3,
@@ -118,7 +118,7 @@ h3:not(:where(.h1, .h2, .h4, .h5, .h6)) {
 
 .h4,
 h4:not(:where(.h1, .h2, .h3, .h5, .h6)) {
-  font-size: 18px;
+  font-size: 24px;
 }
 @media (max-width: 575px) {
   .h4,
@@ -129,12 +129,12 @@ h4:not(:where(.h1, .h2, .h3, .h5, .h6)) {
 
 .h5,
 h5:not(:where(.h1, .h2, .h3, .h4, .h6)) {
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .h6,
 h6:not(:where(.h1, .h2, .h3, .h4, .h5)) {
-  font-size: 12px;
+  font-size: 18px;
   line-height: 1.5;
 }
 
@@ -190,7 +190,7 @@ textarea::placeholder {
   font-size: 16px;
   line-height: 1.5;
   text-transform: capitalize;
-  color: var(--poseidon-200);
+  color: var(--);
 }
 
 .flex-shrink-0 {
@@ -209,7 +209,7 @@ input::-webkit-inner-spin-button {
 
 .input-field:focus {
   outline: none;
-  border-color: var(--poseidon-200);
+  border-color: var(--);
 }
 
 select[required].nice-select-search ~ .nice-select,
@@ -221,4 +221,13 @@ select[required] {
   height: 0;
   padding: 0;
   border: 0;
+}
+
+.primary-btn {
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--black);
+  border-radius: 6px;
+  text-align: center;
+  padding: 4px 6px;
 }
