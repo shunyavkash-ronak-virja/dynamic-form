@@ -112,7 +112,7 @@ h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
 @media (max-width: 575px) {
   .h2,
   h2:not(:where(.h1, .h3, .h4, .h5, .h6)) {
-    font-size: 28px;
+    font-size: 30px;
   }
 }
 
@@ -186,7 +186,7 @@ button {
   cursor: pointer;
 }
 
-label:not(label:has(~ select)) {
+label:not(:where(.auto-cursor)) {
   cursor: pointer;
 }
 
@@ -216,6 +216,12 @@ textarea::placeholder {
 
 .column-span-2 {
   grid-column: span 2;
+}
+
+@media (max-width: 575px) {
+  .column-span-2 {
+    grid-column: auto;
+  }
 }
 
 .item-hidden {
@@ -263,8 +269,8 @@ select[required] {
   padding: 0;
   border: 0;
 }
-.primary-btn,
-.secondary-btn {
+
+.btn {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -275,6 +281,12 @@ select[required] {
   padding: 12px 18px;
   border: 1px solid;
   transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 575px) {
+  .btn {
+    padding: 12px 14px;
+  }
 }
 
 .primary-btn {
