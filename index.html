@@ -23,7 +23,8 @@
     <section class="main-wrapper">
         <!-- <div class="form-step-counter"></div> -->
         <form class="form-step-wrapper">
-            <div class="form-step form-step-one active">
+
+            <div class="form-step form-step-one">
                 <div class="form-title-wrapper">
                     <h2 class="form-title">Tell us about yourself</h2>
                     <p class="form-description">Enter your basic personal information to get started.</p>
@@ -43,7 +44,7 @@
                     </div>
                     <div class="input-stack">
                         <label class="input-label" for="phone">Phone Number</label>
-                        <input class="input-field" type="number" name="phone" id="phone" placeholder="Enter your phone number" minlength="10" maxlength="10" required>
+                        <input class="input-field" type="number" name="phone" id="phone" placeholder="Enter your phone number" min="10" max="10" maxlength="10" required>
                     </div>
                     <div class="input-stack">
                         <label class="input-label" for="date-of-birth">Date of Birth</label>
@@ -73,15 +74,15 @@
                     <div class="column-span-2 input-stack">
                         <label class="input-label cursor-auto" for="gender">Gender</label>
                         <div class="gender-wrapper">
-                            <label class="gender-stack" for="male">
+                            <label class="gender-stack">
                                 <input class="primary-radio" type="radio" name="gender" id="male" checked>
                                 Male
                             </label>
-                            <label class="gender-stack" for="female">
+                            <label class="gender-stack">
                                 <input class="primary-radio" type="radio" name="gender" id="female">
                                 Female
                             </label>
-                            <label class="gender-stack" for="other">
+                            <label class="gender-stack">
                                 <input class="primary-radio" type="radio" name="gender" id="other">
                                 Other
                             </label>
@@ -95,21 +96,187 @@
                     <h2 class="form-title">Employment Details</h2>
                     <p class="form-description">Tell us about your current employment or education status.</p>
                 </div>
+                <div class="vertical-field-stack">
+                    <div class="input-stack">
+                        <label class="input-label cursor-auto" for="employment-status">Are you currently employed</label>
+                        <select class="input-field" name="employment-status" id="employment-status" required>
+                            <option value="" selected disabled>Select your current status</option>
+                            <option data-value="yes" value="yes">Yes</option>
+                            <option data-value="no" value="no">No</option>
+                            <option data-value="self-employed" value="self-employed">Self-employed</option>
+                            <option data-value="student" value="student">Student</option>
+                        </select>
+                    </div>
+
+                    <div class="form-step-field employment-status-option" data-employment-status="yes">
+                        <div class="input-stack">
+                            <label class="input-label" for="job-title">Job Title</label>
+                            <input class="input-field" type="text" name="job-title" id="job-title" placeholder="Enter your job title" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="company-name">Company Name</label>
+                            <input class="input-field" type="text" name="company-name" id="company-name" placeholder="Enter your company name" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="work-email">Work Email</label>
+                            <input class="input-field" type="email" name="work-email" id="work-email" placeholder="name@company.com" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="years-experience">Years of Experience</label>
+                            <input class="input-field" type="number" name="years-experience" id="years-experience" placeholder="e.g. 3" required>
+                        </div>
+                    </div>
+
+                    <div class="vertical-field-stack employment-status-option" data-employment-status="no">
+                        <div class="input-stack">
+                            <label class="input-label cursor-auto" for="current-situation">Current Situation</label>
+                            <select class="input-field" name="current-situation" id="current-situation" required>
+                                <option value="" selected disabled>Select your current situation</option>
+                                <option value="looking-for-work">Looking for work</option>
+                                <option value="career-break">Career break</option>
+                                <option value="retired">Retired</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="employment-notes">Additional Information</label>
+                            <textarea class="scrollbar input-field textarea-field" name="employment-notes" id="employment-notes" placeholder="Tell us about your current situation"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-step-field employment-status-option" data-employment-status="self-employed">
+                        <div class="input-stack">
+                            <label class="input-label" for="business-name">Business Name</label>
+                            <input class="input-field" type="text" name="business-name" id="business-name" placeholder="Enter your business name" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label cursor-auto" for="business-type">Business Type</label>
+                            <select class="input-field" name="business-type" id="business-type" required>
+                                <option value="" selected disabled>Select your business type</option>
+                                <option value="sole-proprietorship">Sole Proprietorship</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="llc">LLC</option>
+                                <option value="corporation">Corporation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="business-role">Your Role</label>
+                            <input class="input-field" type="text" name="business-role" id="business-role" placeholder="e.g. Founder" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="business-years">Years in Business</label>
+                            <input class="input-field" type="number" name="business-years" id="business-years" placeholder="e.g. 2" required>
+                        </div>
+                    </div>
+
+                    <div class="form-step-field employment-status-option" data-employment-status="student">
+                        <div class="input-stack">
+                            <label class="input-label" for="institution-name">Institution Name</label>
+                            <input class="input-field" type="text" name="institution-name" id="institution-name" placeholder="Enter school or university name" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="field-of-study">Field of Study</label>
+                            <input class="input-field" type="text" name="field-of-study" id="field-of-study" placeholder="e.g. Computer Science" required>
+                        </div>
+                        <div class="input-stack">
+                            <label class="cursor-auto input-label" for="education-level">Education Level</label>
+                            <select class="input-field" name="education-level" id="education-level" required>
+                                <option value="" selected disabled>Select your education level</option>
+                                <option value="high-school">High School</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="postgraduate">Postgraduate</option>
+                                <option value="phd">PhD</option>
+                            </select>
+                        </div>
+                        <div class="input-stack">
+                            <label class="input-label" for="graduation-year">Expected Graduation Year</label>
+                            <input class="input-field" type="number" name="graduation-year" id="graduation-year" placeholder="e.g. 2027" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-step form-step-three active">
+                <div class="form-title-wrapper">
+                    <h2 class="form-title">Address</h2>
+                    <p class="form-description">Provide your current residential address.</p>
+                </div>
                 <div class="form-step-field">
                     <div class="input-stack">
-                        <label class="input-label" for="first-name">What is your current status?</label>
-                        <select class="input-field" name="nationality" id="nationality" required>
-                            <option value="" selected disabled>Select your nationality</option>
+                        <label class="input-label" for="address-line-1">Address Line 1</label>
+                        <input class="input-field" type="text" name="address-line-1" id="address-line-1" placeholder="Enter your street address" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="address-line-2">Address Line 2 <span class="label-caption">(optional)</span></label>
+                        <input class="input-field" type="text" name="address-line-2" id="address-line-2" placeholder="Apartment, unit, floor, etc.">
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label cursor-auto" for="country">Country</label>
+                        <select class="input-field" name="country" id="country" required>
+                            <option value="" selected disabled>Select your country</option>
                             <option value="australia">Australia</option>
                             <option value="brazil">Brazil</option>
+                            <option value="canada">Canada</option>
+                            <option value="china">China</option>
+                            <option value="egypt">Egypt</option>
+                            <option value="germany">Germany</option>
+                            <option value="india">India</option>
+                            <option value="italy">Italy</option>
+                            <option value="japan">Japan</option>
+                            <option value="mexico">Mexico</option>
+                            <option value="nigeria">Nigeria</option>
+                            <option value="russia">Russia</option>
+                            <option value="spain">Spain</option>
+                            <option value="united-kingdom">United Kingdom</option>
+                            <option value="united-states">United States</option>
                         </select>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label cursor-auto" for="state">State / Province</label>
+                        <select class="input-field" name="state" id="state" required>
+                            <option value="" selected disabled>Select your state</option>
+                            <option value="gujarat">Gujarat</option>
+                            <option value="maharashtra">Maharashtra</option>
+                            <option value="rajasthan">Rajasthan</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="city">City</label>
+                        <input class="input-field" type="text" name="city" id="city" placeholder="Enter your street city" required>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="postal-code">Postal Code</label>
+                        <input class="input-field" type="text" name="postal-code" id="postal-code" placeholder="Enter postal code" required>
+                    </div>
+                    <div class="column-span-2 input-stack">
+                        <label class="input-label" for="address-notes">Additional Address Details <span class="label-caption">(optional)</span></label>
+                        <textarea class="input-field textarea-field" name="address-notes" id="address-notes" placeholder="Apartment, landmark, directions, or other details"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-step form-step-four">
+                <div class="form-title-wrapper">
+                    <h2 class="form-title">Documents</h2>
+                    <p class="form-description">Upload the required documents to verify your information.</p>
+                </div>
+                <div class="form-step-field">
+                    <div class="input-stack">
+                        <label class="input-label input-stack" for="identity-document">Identity Document
+                            <span class="document-input-field">Upload identity document</span>
+                            <input class="input-field" type="file" name="identity-document" id="identity-document" accept=".pdf,.jpg,.jpeg,.png" required>
+                        </label>
                     </div>
                 </div>
             </div>
 
             <div class="form-btn-wrapper">
                 <button class="btn secondary-btn item-hidden" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon lucide lucide-move-left preview-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon lucide lucide-move-left preview-icon">
                         <path d="M6 8L2 12L6 16" />
                         <path d="M2 12H22" />
                     </svg>
@@ -117,7 +284,7 @@
                 </button>
                 <button class="btn primary-btn" type="submit">
                     <span>Continue</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon lucide lucide-move-right preview-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon lucide lucide-move-right preview-icon">
                         <path d="M18 8L22 12L18 16" />
                         <path d="M2 12H22" />
                     </svg>

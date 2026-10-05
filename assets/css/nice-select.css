@@ -23,8 +23,8 @@
   content: "";
   width: 5px;
   height: 5px;
-  border-bottom: 2px solid var(--poseidon-200);
-  border-right: 2px solid var(--poseidon-200);
+  border-bottom: 2px solid var(--grey);
+  border-right: 2px solid var(--grey);
   display: block;
   margin-top: -4px;
   pointer-events: none;
