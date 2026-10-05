@@ -1,9 +1,6 @@
 .main-wrapper {
   width: 100%;
   max-width: 670px;
-  display: flex;
-  flex-direction: column;
-  gap: 38px;
   border-radius: 26px;
   box-shadow:
     0 1px 2px 0 var(--black-73),
@@ -11,6 +8,12 @@
   background-color: var(--white);
   padding: 40px;
   overflow-x: hidden;
+}
+
+.form-step-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
 }
 
 .form-step {
@@ -46,7 +49,7 @@
   color: var(--grey);
 }
 
-.form-wrapper {
+.form-step-field {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
