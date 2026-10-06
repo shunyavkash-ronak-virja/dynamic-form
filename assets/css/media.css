@@ -28,4 +28,20 @@
   .form-step-field {
     grid-template-columns: repeat(1, 1fr);
   }
+
+  .review-table-layer {
+    border-radius: 12px;
+  }
+
+  .review-table-block {
+    padding-inline: 0;
+  }
+
+  .table-title {
+    margin-bottom: 10px;
+  }
+
+  .table-value-btn {
+    width: 15px;
+  }
 }

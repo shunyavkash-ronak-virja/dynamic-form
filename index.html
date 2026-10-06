@@ -140,7 +140,7 @@
                         </div>
                         <div class="input-stack">
                             <label class="input-label" for="employment-notes">Additional Information</label>
-                            <textarea class="scrollbar input-field textarea-field" name="employment-notes" id="employment-notes" placeholder="Tell us about your current situation"></textarea>
+                            <textarea class="scrollbar-vertical input-field textarea-field" name="employment-notes" id="employment-notes" placeholder="Tell us about your current situation"></textarea>
                         </div>
                     </div>
 
@@ -198,7 +198,7 @@
                 </div>
             </div>
 
-            <div class="form-step form-step-three active">
+            <div class="form-step form-step-three">
                 <div class="form-title-wrapper">
                     <h2 class="form-title">Address</h2>
                     <p class="form-description">Provide your current residential address.</p>
@@ -254,7 +254,7 @@
                     </div>
                     <div class="column-span-2 input-stack">
                         <label class="input-label" for="address-notes">Additional Address Details <span class="label-caption">(optional)</span></label>
-                        <textarea class="input-field textarea-field" name="address-notes" id="address-notes" placeholder="Apartment, landmark, directions, or other details"></textarea>
+                        <textarea class="scrollbar-vertical input-field textarea-field" name="address-notes" id="address-notes" placeholder="Apartment, landmark, directions, or other details"></textarea>
                     </div>
                 </div>
             </div>
@@ -265,13 +265,726 @@
                     <p class="form-description">Upload the required documents to verify your information.</p>
                 </div>
                 <div class="form-step-field">
-                    <div class="input-stack">
-                        <label class="input-label input-stack" for="identity-document">Identity Document
-                            <span class="document-input-field">Upload identity document</span>
-                            <input class="input-field" type="file" name="identity-document" id="identity-document" accept=".pdf,.jpg,.jpeg,.png" required>
-                        </label>
+                    <label class="input-label input-stack" for="identity-document">Identity Document
+                        <span class="document-input-field">Upload ID document</span>
+                        <input class="input-field" type="file" name="identity-document" id="identity-document" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </label>
+                    <label class="input-label input-stack" for="proof-of-address">Proof of Address
+                        <span class="document-input-field">Upload address proof</span>
+                        <input class="input-field" type="file" name="proof-of-address" id="proof-of-address" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </label>
+                    <label class="input-label input-stack" for="passport-photo">Passport-Size Photo
+                        <span class="document-input-field">Upload your photo</span>
+                        <input class="input-field" type="file" name="passport-photo" id="passport-photo" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </label>
+                    <label class="input-label input-stack" for="education-certificate">
+                        <span>Education Certificate <span class="label-caption">(Optional)</span></span>
+                        <span class="document-input-field">Upload certificate</span>
+                        <input class="input-field" type="file" name="education-certificate" id="education-certificate" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </label>
+                    <label class="input-label input-stack" for="financial-proof">
+                        <span>Financial Proof <span class="label-caption">(Optional)</span></span>
+                        <span class="document-input-field">Upload financial proof</span>
+                        <input class="input-field" type="file" name="financial-proof" id="financial-proof" accept=".pdf,.jpg,.jpeg,.png">
+                    </label>
+                    <label class="input-label input-stack" for="supporting-document">
+                        <span> Supporting Document <span class="label-caption">(Optional)</span></span>
+                        <span class="document-input-field">Upload document</span>
+                        <input class="input-field" type="file" name="supporting-document" id="supporting-document" accept=".pdf,.jpg,.jpeg,.png">
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-step form-step-five active">
+                <div class="form-title-wrapper">
+                    <h2 class="form-title">Review</h2>
+                    <p class="form-description">Check your information before submitting.</p>
+                </div>
+                <div class="review-table-block">
+                    <h3 class="h4 table-title">Personal Details</h3>
+                    <div class="scrollbar-horizontal review-table-layer">
+                        <table class="review-table">
+                            <thead class="review-thead">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="review-tbody">
+                                <tr>
+                                    <td>First Name</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Marcus</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Last Name</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Chen</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">marcus@example.com</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Phone</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">+01 XXXXX XXXXX</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">10/10/2000</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Nationality</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">United States</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Gender</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Male</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+                <div class="review-table-block">
+                    <h3 class="h4 table-title">Employment Details</h3>
+                    <div class="scrollbar-horizontal review-table-layer">
+                        <table class="review-table">
+                            <thead class="review-thead">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="review-tbody">
+                                <tr>
+                                    <td>Status</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Employed</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Job Title</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Frontend Developer</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Company Name</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">ABC Company</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Work Email</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">name@company.com</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Experience</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">3 years</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="review-table-block">
+                    <h3 class="h4 table-title">Address</h3>
+                    <div class="scrollbar-horizontal review-table-layer">
+                        <table class="review-table">
+                            <thead class="review-thead">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="review-tbody">
+                                <tr>
+                                    <td>Address Line 1</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">123 Main Street</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Address Line 2</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Apartment 4B</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Country</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">United States</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>State</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Alaska</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>City</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Anchorage</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Postal Code</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">99504</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="review-table-block">
+                    <h3 class="h4 table-title">Documents</h3>
+                    <div class="scrollbar-horizontal review-table-layer">
+                        <table class="review-table">
+                            <thead class="review-thead">
+                                <tr>
+                                    <th>Document</th>
+                                    <th>File</th>
+                                </tr>
+                            </thead>
+                            <tbody class="review-tbody">
+                                <tr>
+                                    <td>Identity Document</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">passport.pdf</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Proof of Address</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">address.pdf</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Passport-Size Photo</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">photo.jpg</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Education Certificate</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">degree.pdf</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Financial Proof</td>
+                                    <td>
+                                        <div class="table-value-wrapper">
+                                            <span class="table-value">Not uploaded</span>
+                                            <div class="table-value-btn-stack">
+                                                <button class="table-value-btn edite-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-pencil preview-icon">
+                                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide save-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-check preview-icon">
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                </button>
+                                                <button class="table-value-btn btn-hide cancel-btn" type="button">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="table-value-icon lucide lucide-x preview-icon">
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <div class="form-btn-wrapper">
@@ -282,7 +995,7 @@
                     </svg>
                     <span>Back</span>
                 </button>
-                <button class="btn primary-btn" type="submit">
+                <button class="btn primary-btn" type="button">
                     <span>Continue</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon lucide lucide-move-right preview-icon">
                         <path d="M18 8L22 12L18 16" />
@@ -291,6 +1004,11 @@
                 </button>
             </div>
         </form>
+
+        <!-- <div class="confirmation-message">
+            <h2>Application Submitted</h2>
+            <p>Your application has been submitted successfully.</p>
+        </div> -->
     </section>
 
     <!-- Nice select js -->

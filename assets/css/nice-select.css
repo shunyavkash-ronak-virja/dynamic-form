@@ -4,7 +4,7 @@
   box-sizing: border-box;
   clear: both;
   font-size: 16px;
-  padding: 8px 12px;
+  padding-right: 26px !important;
   color: var(--grey);
   display: block;
   outline: none;
@@ -88,6 +88,14 @@
 .nice-select .option.focus,
 .nice-select .current {
   color: var(--black);
+}
+
+.nice-select .current {
+  /* white-space: wrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; */
+  overflow: hidden;
 }
 
 .nice-select .option.disabled {
