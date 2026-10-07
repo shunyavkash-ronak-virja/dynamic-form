@@ -226,9 +226,15 @@ textarea::placeholder {
   }
 }
 
-.item-hidden {
+.back-btn {
   opacity: 0;
   visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.back-btn.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 input::-webkit-outer-spin-button,
@@ -392,4 +398,13 @@ select[required] {
   background-color: var(--black-12);
   border-radius: 24px;
   background-clip: padding-box;
+}
+
+.input-error {
+  color: var(--red);
+  font-size: 14px;
+}
+
+.input-field.input-error-field {
+  border-color: var(--red);
 }

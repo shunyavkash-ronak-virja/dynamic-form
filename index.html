@@ -6,10 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Multi-Step Form</title>
 
-    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js" type="module"></script>
-
-
-    <!----- Nice select css ----->
+    <!----- Nice Select Css ----->
     <link rel="stylesheet" href="assets/css/nice-select.css">
 
     <!----- Google Font ----->
@@ -69,7 +66,6 @@
                     </svg>
                 </span>
             </div>
-
         </div>
         <form class="form-step-wrapper">
 
@@ -93,9 +89,9 @@
                     </div>
                     <div class="input-stack">
                         <label class="input-label" for="phone">Phone Number</label>
-                        <input class="input-field" type="number" name="phone" id="phone" placeholder="Enter your phone number" min="10" max="10" maxlength="10" required>
+                        <input class="input-field" type="tel" name="phone" id="phone" placeholder="Enter your phone number" minlength="10" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9+() -]/g, '')" required>
                     </div>
-                    <div class="input-stack">
+                    <div class=" input-stack">
                         <label class="input-label" for="date-of-birth">Date of Birth</label>
                         <input class="input-field" type="date" name="date-of-birth" id="date-of-birth" placeholder="Select your date of birth" required>
                     </div>
@@ -329,7 +325,7 @@
                     <label class="input-label input-stack" for="education-certificate">
                         <span>Education Certificate <span class="label-caption">(Optional)</span></span>
                         <span class="document-input-field">Upload certificate</span>
-                        <input class="input-field" type="file" name="education-certificate" id="education-certificate" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <input class="input-field" type="file" name="education-certificate" id="education-certificate" accept=".pdf,.jpg,.jpeg,.png">
                     </label>
                     <label class="input-label input-stack" for="financial-proof">
                         <span>Financial Proof <span class="label-caption">(Optional)</span></span>
@@ -1037,14 +1033,14 @@
             </div>
 
             <div class="form-btn-wrapper">
-                <button class="btn secondary-btn item-hidden" type="button">
+                <button class="btn secondary-btn back-btn" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon lucide lucide-move-left preview-icon">
                         <path d="M6 8L2 12L6 16" />
                         <path d="M2 12H22" />
                     </svg>
                     <span>Back</span>
                 </button>
-                <button class="btn primary-btn" type="button">
+                <button class="btn primary-btn next-btn" type="button">
                     <span>Continue</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon lucide lucide-move-right preview-icon">
                         <path d="M18 8L22 12L18 16" />
@@ -1053,19 +1049,21 @@
                 </button>
             </div>
         </form>
-
         <div class="confirmation-message">
             <div class="confirmation-content">
                 <dotlottie-wc src="https://lottie.host/a8c78a6a-c30b-4f78-a417-00c8bd90ff40/6hOo8KTXrH.json" autoplay speed="1.4" class="lottie-container">
                 </dotlottie-wc>
-                <h2>Application Submitted</h2>
-                <p>Your application has been submitted successfully. <br> Thank you for your submission.</p>
+                <h2 class="confirmation-title">Application Submitted</h2>
+                <p class="confirmation-description">Your application has been submitted successfully. <br> Thank you for your submission.</p>
             </div>
             <button class="btn primary-btn">Start New Application</button>
         </div>
     </section>
 
-    <!-- Nice select js -->
+    <!-----  Lottie Animation Js ----->
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js" type="module"></script>
+
+    <!-- Nice Select js -->
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/jquery.nice-select.js"></script>
 
