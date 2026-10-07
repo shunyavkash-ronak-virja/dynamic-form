@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Multi-Step Form</title>
 
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js" type="module"></script>
+
+
     <!----- Nice select css ----->
     <link rel="stylesheet" href="assets/css/nice-select.css">
 
@@ -21,10 +24,26 @@
 <body>
 
     <section class="main-wrapper">
-        <!-- <div class="form-step-counter"></div> -->
+        <!-- <div class="future-step-wrapper">
+            <div class="future-step-block">
+                1
+            </div>
+            <div class="future-step-block">
+                2
+            </div>
+            <div class="future-step-block">
+                3
+            </div>
+            <div class="future-step-block">
+                4
+            </div>
+            <div class="future-step-block">
+                5
+            </div>
+        </div> -->
         <form class="form-step-wrapper">
 
-            <div class="form-step form-step-one">
+            <div class="form-step form-step-one active">
                 <div class="form-title-wrapper">
                     <h2 class="form-title">Tell us about yourself</h2>
                     <p class="form-description">Enter your basic personal information to get started.</p>
@@ -295,7 +314,7 @@
                 </div>
             </div>
 
-            <div class="form-step form-step-five active">
+            <div class="form-step form-step-five">
                 <div class="form-title-wrapper">
                     <h2 class="form-title">Review</h2>
                     <p class="form-description">Check your information before submitting.</p>
@@ -1005,10 +1024,15 @@
             </div>
         </form>
 
-        <!-- <div class="confirmation-message">
-            <h2>Application Submitted</h2>
-            <p>Your application has been submitted successfully.</p>
-        </div> -->
+        <div class="confirmation-message">
+            <div class="confirmation-content">
+                <dotlottie-wc src="https://lottie.host/a8c78a6a-c30b-4f78-a417-00c8bd90ff40/6hOo8KTXrH.json" autoplay speed="1.4" class="lottie-container">
+                </dotlottie-wc>
+                <h2>Application Submitted</h2>
+                <p>Your application has been submitted successfully. <br> Thank you for your submission.</p>
+            </div>
+            <button class="btn primary-btn">Start New Application</button>
+        </div>
     </section>
 
     <!-- Nice select js -->

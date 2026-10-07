@@ -9,8 +9,29 @@
   padding: 40px;
 }
 
+.main-wrapper .active {
+  display: flex;
+}
+
+.future-step-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.future-step-block {
+  width: 32px;
+  aspect-ratio: 1;
+  border: 1px solid var(--grey);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .form-step-wrapper {
-  /* display: none; */
   display: flex;
   flex-direction: column;
   gap: 38px;
@@ -21,22 +42,6 @@
   display: none;
   flex-direction: column;
   gap: 38px;
-}
-
-.form-step.active {
-  display: flex;
-  animation: formShow 0.32s cubic-bezier(0.22, 0.68, 0, 1.2) both;
-}
-
-@keyframes formShow {
-  0% {
-    opacity: 0;
-    /* transform: translateX(20px); */
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 .form-title-wrapper {
@@ -194,11 +199,23 @@
 }
 
 /* ----- Confirmation Message ----- */
-
 .confirmation-message {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: none;
+  gap: 28px;
   text-align: center;
+}
+
+.confirmation-message,
+.confirmation-content {
+  flex-direction: column;
   align-items: center;
+}
+
+.lottie-container {
+  width: 250px;
+}
+
+.confirmation-content {
+  display: flex;
+  gap: 14px;
 }
