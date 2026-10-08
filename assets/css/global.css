@@ -408,3 +408,27 @@ select[required] {
 .input-field.input-error-field {
   border-color: var(--red);
 }
+
+.input-field[type="date"],
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.submit-btn {
+  display: none;
+}
+
+/* .input-field[type="date"],
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  color: var(--grey);
+} 
+
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+}
+
+.input-field[type="date"].is-filled,
+.input-field[type="date"]::-webkit-calendar-picker-indicator.is-filled {
+  color: #000000;
+} */

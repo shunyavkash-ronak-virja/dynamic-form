@@ -68,14 +68,14 @@
 }
 
 .future-step-num,
-.future-step-stack.completed .future-step-checkmark {
+.future-step-stack.complete .future-step-checkmark {
   opacity: 1;
   visibility: visible;
   transform: scale(1);
 }
 
 .future-step-checkmark,
-.future-step-stack.completed .future-step-num {
+.future-step-stack.complete .future-step-num {
   opacity: 0;
   visibility: hidden;
   transform: scale(0);
