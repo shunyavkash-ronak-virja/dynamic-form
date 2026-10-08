@@ -760,15 +760,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const savedForm =
             getSavedForm();
 
+        const newData =
+            collectStepData(stepIndex);
+
+        const oldData =
+            savedForm.completedSteps[
+            stepIndex
+            ] || {};
+
+
+        // Preserve previously saved file data
+        // when the browser file input is empty
+        // after a page refresh.
+
+        const step =
+            formSteps[stepIndex];
+
+        step.querySelectorAll(
+            'input[type="file"]'
+        ).forEach((input) => {
+
+            if (
+                !input.files.length &&
+                oldData[input.name]
+            ) {
+
+                newData[input.name] =
+                    oldData[input.name];
+            }
+        });
+
+
         savedForm.completedSteps[
             stepIndex
-        ] = collectStepData(stepIndex);
+        ] = newData;
+
 
         savedForm.maxUnlockedStep =
             Math.max(
                 savedForm.maxUnlockedStep || 0,
                 stepIndex + 1
             );
+
 
         saveFormData(savedForm);
     }
@@ -787,14 +820,52 @@ document.addEventListener("DOMContentLoaded", () => {
             "input, select, textarea"
         ).forEach((input) => {
 
-            if (input.type === "radio" ||
-                input.type === "checkbox") {
+            if (
+                input.type === "radio" ||
+                input.type === "checkbox"
+            ) {
 
                 input.checked = false;
 
-            } else if (input.type === "file") {
+
+            } else if (
+                input.type === "file"
+            ) {
 
                 input.value = "";
+
+                // Reset visible filename
+                const display =
+                    input
+                        .closest("label")
+                        ?.querySelector(
+                            ".document-input-field"
+                        );
+
+                if (display) {
+
+                    display.textContent =
+                        display.dataset.defaultText ||
+                        "Upload document";
+                }
+
+
+            } else if (
+                input.tagName === "SELECT"
+            ) {
+
+                // Clear the actual select
+                input.value = "";
+
+                // IMPORTANT:
+                // Update Nice Select UI
+                if (
+                    typeof $ !== "undefined"
+                ) {
+
+                    $(input).niceSelect("update");
+                }
+
 
             } else {
 
@@ -806,6 +877,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         updateEmploymentFields();
+    }
+
+    function isDocumentStep(stepIndex) {
+        return stepIndex === formSteps.length - 2;
+    }
+
+
+    function resetDocumentStep() {
+
+        const documentStepIndex =
+            formSteps.length - 2;
+
+        clearStep(documentStepIndex);
+
+        const documentStep =
+            formSteps[documentStepIndex];
+
+        // Reset the visible upload text
+        documentStep
+            .querySelectorAll(".document-input-field")
+            .forEach((element) => {
+
+                const defaultText =
+                    element.dataset.defaultText;
+
+                if (defaultText) {
+                    element.textContent =
+                        defaultText;
+                }
+            });
     }
 
 
@@ -868,10 +969,32 @@ document.addEventListener("DOMContentLoaded", () => {
             // FILE
             // ---------------------------------
 
-            if (input.type === "file") {
 
-                // Browser does not allow us
-                // to restore the actual file.
+            if (input.type === "file") {
+                const display =
+                    input
+                        .closest("label")
+                        ?.querySelector(
+                            ".document-input-field"
+                        );
+
+                if (display) {
+
+                    if (
+                        savedValue &&
+                        savedValue.name
+                    ) {
+
+                        display.textContent =
+                            savedValue.name;
+
+                    } else {
+
+                        display.textContent =
+                            "Upload document";
+                    }
+                }
+
                 return;
             }
 
@@ -914,17 +1037,16 @@ document.addEventListener("DOMContentLoaded", () => {
             savedForm.maxUnlockedStep || 0;
 
         if (
-            maxUnlockedStep >=
-            formSteps.length
+            maxUnlockedStep >= formSteps.length
         ) {
             maxUnlockedStep =
                 formSteps.length - 1;
         }
 
-
-        // Restore only completed steps.
-        // Current unlocked step remains blank
-        // if it wasn't committed yet.
+        // =========================================
+        // RESTORE STEPS 1, 2, 3...
+        // BUT NEVER RESTORE DOCUMENT STEP
+        // =========================================
 
         for (
             let index = 0;
@@ -935,16 +1057,10 @@ document.addEventListener("DOMContentLoaded", () => {
             restoreStep(index);
         }
 
-
-        currentStep =
-            Math.min(
-                maxUnlockedStep,
-                formSteps.length - 1
-            );
-
-
-        // If the last step was already completed,
-        // show review step.
+        // =========================================
+        // AFTER ALL STEPS ARE COMPLETED
+        // SHOW REVIEW
+        // =========================================
 
         if (
             maxUnlockedStep >=
@@ -954,7 +1070,10 @@ document.addEventListener("DOMContentLoaded", () => {
             currentStep =
                 formSteps.length - 1;
 
-            restoreStep(currentStep);
+        } else {
+
+            currentStep =
+                maxUnlockedStep;
         }
 
 
@@ -964,7 +1083,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateReview();
     }
-
 
     // =========================================
     // SHOW STEP
@@ -1108,18 +1226,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         index !== currentStep
                     ) {
 
-                        restoreStep(
-                            currentStep
-                        );
+                        restoreStep(currentStep);
+
+                        currentStep = index;
+
+                        restoreStep(currentStep);
                     }
 
 
-                    currentStep =
-                        index;
-
-                    showStep(
-                        currentStep
-                    );
+                    showStep(currentStep);
 
                     updateReview();
                 }
@@ -1162,9 +1277,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            const previousStep =
-                currentStep;
-
             currentStep++;
 
 
@@ -1186,12 +1298,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Clear new step because it
                 // has not been filled yet.
-                clearStep(currentStep);
+                // If the next step was already completed,
+                // restore its saved data.
+                //
+                // Otherwise, keep it empty for first-time entry.
 
-
-                showStep(
+                const nextStepData =
+                    savedForm.completedSteps[
                     currentStep
-                );
+                    ];
+
+                if (nextStepData) {
+
+                    restoreStep(currentStep);
+
+                } else {
+
+                    clearStep(currentStep);
+                }
+
+
+                showStep(currentStep);
 
                 updateReview();
             }
@@ -1212,23 +1339,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // Current step has not been
-            // committed, so restore its
-            // last saved state.
-            restoreStep(
-                currentStep
-            );
+            // Restore the current step's
+            // last saved data before leaving it.
+            restoreStep(currentStep);
 
 
             currentStep--;
 
-            restoreStep(
-                currentStep
-            );
 
-            showStep(
-                currentStep
-            );
+            // Restore the previous step,
+            // including Step 4.
+            restoreStep(currentStep);
+
+
+            showStep(currentStep);
 
             updateReview();
         }
@@ -1395,6 +1519,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             );
 
                     if (display) {
+
+                        // Remember the original placeholder
+                        // before replacing it.
+                        if (!display.dataset.defaultText) {
+
+                            display.dataset.defaultText =
+                                display.textContent;
+                        }
 
                         display.textContent =
                             file.name;
@@ -1938,22 +2070,25 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                // Remove saved application.
+                // Remove saved application
                 localStorage.removeItem(
                     STORAGE_KEY
                 );
 
-
-                // Reset state.
+                // Reset state
                 currentStep = 0;
                 maxUnlockedStep = 0;
 
 
-                // Reset all form controls.
-                form.reset();
+                // Clear all steps
+                formSteps.forEach(
+                    (_, index) => {
+                        clearStep(index);
+                    }
+                );
 
 
-                // Clear errors.
+                // Clear errors
                 formSteps.forEach(
                     (step) => {
                         removeStepErrors(step);
@@ -1961,7 +2096,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                // Clear file display text.
+                // Clear document display names
                 document
                     .querySelectorAll(
                         ".document-input-field"
@@ -1980,29 +2115,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
 
 
-                // Hide confirmation.
+                // Hide confirmation
                 confirmationMessage.classList.remove(
                     "active"
                 );
 
 
-                // Show form/progress.
+                // Show form/progress
                 document
                     .querySelector(
                         ".future-step-wrapper"
                     )
                     .style.display = "";
 
-
                 form.style.display = "";
-
-
-                // Clear all steps.
-                formSteps.forEach(
-                    (_, index) => {
-                        clearStep(index);
-                    }
-                );
 
 
                 updateEmploymentFields();
@@ -2037,52 +2163,3 @@ document.addEventListener("DOMContentLoaded", () => {
     restoreSavedData();
 
 });
-
-function restoreSavedFileNames(stepIndex) {
-
-    const savedForm =
-        getSavedForm();
-
-    const savedData =
-        savedForm.completedSteps[
-        stepIndex
-        ];
-
-    if (!savedData) {
-        return;
-    }
-
-
-    const step =
-        formSteps[stepIndex];
-
-
-    step.querySelectorAll(
-        'input[type="file"]'
-    ).forEach((input) => {
-
-        const savedFile =
-            savedData[input.name];
-
-        if (
-            !savedFile ||
-            !savedFile.name
-        ) {
-            return;
-        }
-
-
-        const display =
-            input
-                .closest("label")
-                ?.querySelector(
-                    ".document-input-field"
-                );
-
-        if (display) {
-
-            display.textContent =
-                savedFile.name;
-        }
-    });
-}
