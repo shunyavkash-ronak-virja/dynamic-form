@@ -16,27 +16,18 @@ $(document).ready(function () {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // =========================================
-    // ELEMENTS
-    // =========================================
-
     const form = document.querySelector(".form-step-wrapper");
     const formSteps = [...document.querySelectorAll(".form-step")];
     const futureSteps = [...document.querySelectorAll(".future-step-stack")];
-
     const backBtn = document.querySelector(".back-btn");
     const nextBtn = document.querySelector(".next-btn");
     const submitBtn = document.querySelector(".submit-btn");
-
     const confirmationMessage = document.querySelector(".confirmation-message");
     const startNewApplicationBtn =
         confirmationMessage?.querySelector(".btn.primary-btn");
-
     const employmentStatus =
         document.getElementById("employment-status");
-
     const STORAGE_KEY = "dynamicMultiStepForm";
-
     let currentStep = 0;
     let maxUnlockedStep = 0;
 
@@ -46,22 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
 
     function getSavedForm() {
-
         try {
-
             const savedData = localStorage.getItem(STORAGE_KEY);
-
             if (!savedData) {
                 return {
                     completedSteps: {},
                     maxUnlockedStep: 0
                 };
             }
-
             return JSON.parse(savedData);
-
         } catch (error) {
-
             return {
                 completedSteps: {},
                 maxUnlockedStep: 0
@@ -69,26 +54,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     function saveFormData(data) {
-
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify(data)
         );
     }
 
-
     // =========================================
     // ERROR HANDLING
     // =========================================
 
     function getErrorElement(input) {
-
         if (input.tagName === "SELECT") {
-
             const niceSelect = input.nextElementSibling;
-
             if (
                 niceSelect &&
                 niceSelect.classList.contains("nice-select")
@@ -102,30 +81,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (input.type === "file") {
-
             const fileLabel = input.closest("label");
-
             if (fileLabel) {
                 return fileLabel.querySelector(
                     ".document-input-field"
                 );
             }
         }
-
         return input;
     }
 
-
     function showError(input, message) {
-
         const inputStack = input.closest(".input-stack");
-
         if (!inputStack) {
             return;
         }
 
         const errorElement = getErrorElement(input);
-
         if (errorElement) {
             errorElement.classList.add("input-error-field");
         }
@@ -137,26 +109,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             errorMessage =
                 document.createElement("span");
-
             errorMessage.className = "input-error";
-
             inputStack.appendChild(errorMessage);
         }
-
         errorMessage.textContent = message;
     }
 
 
     function removeError(input) {
-
         const inputStack = input.closest(".input-stack");
-
         if (!inputStack) {
             return;
         }
 
         const errorElement = getErrorElement(input);
-
         if (errorElement) {
             errorElement.classList.remove(
                 "input-error-field"
@@ -171,9 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     function removeStepErrors(step) {
-
         step.querySelectorAll(
             "input, select, textarea"
         ).forEach((input) => {
@@ -181,13 +145,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
     // =========================================
     // CONDITIONAL FIELD HELPERS
     // =========================================
-
     function isFieldVisible(input) {
-
         const employmentOption =
             input.closest(
                 ".employment-status-option"
@@ -204,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
             input.closest("[data-show-if]");
 
         if (conditionElement) {
-
             if (
                 !checkCondition(
                     conditionElement
@@ -217,9 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
-
     function checkCondition(element) {
-
         const condition =
             element.dataset.showIf;
 
@@ -240,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (field.type === "radio") {
-
             const checkedRadio =
                 document.querySelector(
                     `input[name="${field.name}"]:checked`
@@ -261,14 +218,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function updateGenericConditions() {
-
         document
             .querySelectorAll("[data-show-if]")
             .forEach((element) => {
 
                 const shouldShow =
                     checkCondition(element);
-
                 element.classList.toggle(
                     "active",
                     shouldShow
@@ -279,28 +234,20 @@ document.addEventListener("DOMContentLoaded", () => {
                         "input, select, textarea"
                     )
                     .forEach((input) => {
-
                         if (!shouldShow) {
-
                             removeError(input);
-
                             input.disabled = true;
-
                         } else {
-
                             input.disabled = false;
                         }
                     });
             });
     }
 
-
     // =========================================
     // EMPLOYMENT CONDITIONAL FIELDS
     // =========================================
-
     function updateEmploymentFields() {
-
         if (!employmentStatus) {
             return;
         }
@@ -330,15 +277,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         "input, select, textarea"
                     )
                     .forEach((input) => {
-
                         if (isActive) {
-
                             input.disabled = false;
-
                         } else {
-
                             input.disabled = true;
-
                             removeError(input);
                         }
                     });
@@ -347,13 +289,11 @@ document.addEventListener("DOMContentLoaded", () => {
         updateGenericConditions();
     }
 
-
     // =========================================
     // VALIDATION
     // =========================================
 
     function validateStep() {
-
         const currentFormStep =
             formSteps[currentStep];
 
@@ -363,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         let isValid = true;
-
 
         // -------------------------------------
         // REQUIRED FIELDS

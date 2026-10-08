@@ -215,34 +215,12 @@
   padding: 5px 16px;
 }
 
-.table-value-wrapper {
+/* .table-value-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-}
-
-.table-value-btn-stack {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-shrink: 0;
-}
-
-.table-value-btn {
-  width: 18px;
-  color: var(--grey);
-  opacity: 0.6;
-  transition: all 0.3s ease-in-out;
-}
-
-.table-value-btn:hover {
-  opacity: 1;
-}
-
-.table-value-icon {
-  width: 100%;
-}
+} */
 
 .btn-hide {
   display: none;
