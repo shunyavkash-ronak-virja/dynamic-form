@@ -197,6 +197,7 @@ textarea {
   width: 100%;
   font-family: inherit;
   font-size: 16px;
+  line-height: var(--line-heights-1_25);
   font-weight: inherit;
   background-color: var(--transparent);
   color: inherit;
@@ -205,7 +206,6 @@ textarea {
 input::placeholder,
 textarea::placeholder {
   font-size: 16px;
-  line-height: var(--line-heights-1_5);
 }
 
 .flex-shrink-0 {
@@ -412,6 +412,7 @@ select[required] {
 .input-field[type="date"],
 .input-field[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
+  line-height: 1;
 }
 
 .submit-btn {

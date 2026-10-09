@@ -4,6 +4,7 @@
   box-sizing: border-box;
   clear: both;
   font-size: 16px;
+  line-height: var(--line-heights-1_25);
   padding-right: 26px !important;
   color: var(--grey);
   display: block;
