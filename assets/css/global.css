@@ -292,6 +292,7 @@ select[required] {
 }
 
 .btn {
+  max-width: max-content;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -302,6 +303,14 @@ select[required] {
   padding: 12px 18px;
   border: 1px solid;
   transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 425px) {
+  .btn {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 575px) {

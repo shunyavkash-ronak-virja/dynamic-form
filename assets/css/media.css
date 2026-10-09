@@ -49,3 +49,10 @@
     width: 26px;
   }
 }
+
+@media (max-width: 425px) {
+  .form-btn-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
