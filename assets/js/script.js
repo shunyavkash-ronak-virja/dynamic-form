@@ -32,10 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let maxUnlockedStep = 0;
 
 
-    // =========================================
-    // STORAGE
-    // =========================================
-
+    // STORAGE ----------
     function getSavedForm() {
         try {
             const savedData = localStorage.getItem(STORAGE_KEY);
@@ -61,10 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    // =========================================
-    // ERROR HANDLING
-    // =========================================
-
+    // ERROR HANDLING ----------
     function getErrorElement(input) {
         if (input.tagName === "SELECT") {
             const niceSelect = input.nextElementSibling;
@@ -102,19 +96,15 @@ document.addEventListener("DOMContentLoaded", () => {
             errorElement.classList.add("input-error-field");
         }
 
-        let errorMessage =
-            inputStack.querySelector(".input-error");
+        let errorMessage = inputStack.querySelector(".input-error");
 
         if (!errorMessage) {
-
-            errorMessage =
-                document.createElement("span");
+            errorMessage = document.createElement("span");
             errorMessage.className = "input-error";
             inputStack.appendChild(errorMessage);
         }
         errorMessage.textContent = message;
     }
-
 
     function removeError(input) {
         const inputStack = input.closest(".input-stack");
@@ -129,9 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-        const errorMessage =
-            inputStack.querySelector(".input-error");
-
+        const errorMessage = inputStack.querySelector(".input-error");
         if (errorMessage) {
             errorMessage.remove();
         }
@@ -145,297 +133,198 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // =========================================
-    // CONDITIONAL FIELD HELPERS
-    // =========================================
+
+
+    function refreshNiceSelect(select) {
+        if (!select) return;
+
+        if (window.jQuery && window.jQuery.fn.niceSelect) {
+            window.jQuery(select).niceSelect("update");
+
+            const niceSelect = select.nextElementSibling;
+
+            if (!niceSelect?.classList.contains("nice-select")) {
+                return;
+            }
+
+            niceSelect.classList.toggle("disabled", select.disabled);
+            niceSelect.querySelectorAll(".option").forEach((option) => {
+                const value = option.getAttribute("data-value");
+                const originalOption = Array.from(select.options).find(
+                    (item) => item.value === value
+                );
+                const isDisabled = !originalOption || originalOption.disabled || select.disabled;
+
+                option.classList.toggle("disabled", isDisabled);
+                option.setAttribute("aria-disabled", String(isDisabled));
+            });
+        }
+    }
+
+    // CONDITIONAL FIELD HELPERS ----------
     function isFieldVisible(input) {
-        const employmentOption =
-            input.closest(
-                ".employment-status-option"
-            );
+        const employmentOption = input.closest(".employment-status-option");
 
         if (
-            employmentOption &&
-            !employmentOption.classList.contains("active")
+            employmentOption && !employmentOption.classList.contains("active")
         ) {
             return false;
         }
 
-        const conditionElement =
-            input.closest("[data-show-if]");
+        const conditionElement = input.closest("[data-show-if]");
 
         if (conditionElement) {
-            if (
-                !checkCondition(
-                    conditionElement
-                )
-            ) {
+            if (!checkCondition(conditionElement)) {
                 return false;
             }
         }
-
         return true;
     }
 
     function checkCondition(element) {
-        const condition =
-            element.dataset.showIf;
+        const condition = element.dataset.showIf;
 
         if (!condition) {
             return true;
         }
 
-        const [fieldId, expectedValue] =
-            condition.split("=");
-
-        const field =
-            document.getElementById(
-                fieldId?.trim()
-            );
-
+        const [fieldId, expectedValue] = condition.split("=");
+        const field = document.getElementById(fieldId?.trim());
         if (!field) {
             return true;
         }
 
         if (field.type === "radio") {
-            const checkedRadio =
-                document.querySelector(
-                    `input[name="${field.name}"]:checked`
-                );
-
+            const checkedRadio = document.querySelector(`input[name="${field.name}"]:checked`);
             return (
-                checkedRadio &&
-                checkedRadio.value ===
-                expectedValue.trim()
+                checkedRadio && checkedRadio.value === expectedValue.trim()
             );
         }
 
         return (
-            field.value.trim() ===
-            expectedValue.trim()
+            field.value.trim() === expectedValue.trim()
         );
     }
 
-
     function updateGenericConditions() {
-        document
-            .querySelectorAll("[data-show-if]")
-            .forEach((element) => {
+        document.querySelectorAll("[data-show-if]").forEach((element) => {
+            const shouldShow = checkCondition(element);
 
-                const shouldShow =
-                    checkCondition(element);
-                element.classList.toggle(
-                    "active",
-                    shouldShow
-                );
-
-                element
-                    .querySelectorAll(
-                        "input, select, textarea"
-                    )
-                    .forEach((input) => {
-                        if (!shouldShow) {
-                            removeError(input);
-                            input.disabled = true;
-                        } else {
-                            input.disabled = false;
-                        }
-                    });
-            });
+            element.classList.toggle("active", shouldShow);
+            element.querySelectorAll("input, select, textarea")
+                .forEach((input) => {
+                    if (!shouldShow) {
+                        removeError(input);
+                        input.disabled = true;
+                    } else {
+                        input.disabled = false;
+                        input.removeAttribute("disabled");
+                    }
+                    if (input.tagName === "SELECT") {
+                        refreshNiceSelect(input);
+                    }
+                });
+        });
     }
 
-    // =========================================
-    // EMPLOYMENT CONDITIONAL FIELDS
-    // =========================================
+    // EMPLOYMENT CONDITIONAL FIELDS ----------
     function updateEmploymentFields() {
-        if (!employmentStatus) {
-            return;
-        }
+        if (!employmentStatus) return;
 
-        const selectedValue =
-            employmentStatus.value;
+        const selectedValue = employmentStatus.value.trim();
 
-        document
-            .querySelectorAll(
-                ".employment-status-option"
-            )
-            .forEach((option) => {
+        document.querySelectorAll(".employment-status-option").forEach((container) => {
+            const isActive = container.dataset.employmentStatus === selectedValue;
 
-                const optionValue =
-                    option.dataset.employmentStatus;
+            container.classList.toggle("active", isActive);
+            container.querySelectorAll("input, select, textarea").forEach((input) => {
+                input.disabled = !isActive;
 
-                const isActive =
-                    optionValue === selectedValue;
-
-                option.classList.toggle(
-                    "active",
-                    isActive
-                );
-
-                option
-                    .querySelectorAll(
-                        "input, select, textarea"
-                    )
-                    .forEach((input) => {
-                        if (isActive) {
-                            input.disabled = false;
-                        } else {
-                            input.disabled = true;
-                            removeError(input);
-                        }
-                    });
+                if (!isActive) {
+                    removeError(input);
+                }
+                if (input.tagName === "SELECT") {
+                    refreshNiceSelect(input);
+                }
             });
-
+        });
         updateGenericConditions();
     }
 
-    // =========================================
-    // VALIDATION
-    // =========================================
+    // VALIDATION ----------
 
     function validateStep() {
-        const currentFormStep =
-            formSteps[currentStep];
-
-        const requiredFields =
-            currentFormStep.querySelectorAll(
-                "[required]"
-            );
-
+        const currentFormStep = formSteps[currentStep];
+        const requiredFields = currentFormStep.querySelectorAll("[required]");
         let isValid = true;
-
-        // -------------------------------------
-        // REQUIRED FIELDS
-        // -------------------------------------
 
         requiredFields.forEach((input) => {
 
             if (
-                input.disabled ||
-                !isFieldVisible(input)
+                input.disabled || !isFieldVisible(input)
             ) {
                 return;
             }
 
             removeError(input);
 
-
-            // ---------------------------------
-            // RADIO
-            // ---------------------------------
-
             if (input.type === "radio") {
 
-                const radioGroup =
-                    currentFormStep.querySelectorAll(
-                        `input[type="radio"][name="${input.name}"]`
-                    );
-
-                const isSelected =
-                    [...radioGroup].some(
-                        (radio) => radio.checked
-                    );
+                const radioGroup = currentFormStep.querySelectorAll(`input[type="radio"][name="${input.name}"]`);
+                const isSelected = [...radioGroup].some((radio) => radio.checked);
 
                 if (!isSelected) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please select an option."
                     );
                 }
-
                 return;
             }
 
-
-            // ---------------------------------
-            // FILE
-            // ---------------------------------
-
             if (input.type === "file") {
 
-                const savedForm =
-                    getSavedForm();
-
-                const savedStepData =
-                    savedForm.completedSteps[
-                    currentStep
-                    ];
-
-                const hasSavedFile =
-                    savedStepData &&
-                    savedStepData[input.name];
-
+                const savedForm = getSavedForm();
+                const savedStepData = savedForm.completedSteps[currentStep];
+                const hasSavedFile = savedStepData && savedStepData[input.name];
 
                 if (
                     !input.files.length &&
                     !hasSavedFile
                 ) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please upload this document."
                     );
                 }
-
                 return;
             }
 
-
-            // ---------------------------------
-            // SELECT
-            // ---------------------------------
-
             if (input.tagName === "SELECT") {
-
                 if (!input.value.trim()) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please select an option."
                     );
                 }
-
                 return;
             }
 
-
-            // ---------------------------------
-            // TEXT / TEXTAREA
-            // ---------------------------------
-
             if (!input.value.trim()) {
-
                 isValid = false;
-
                 showError(
                     input,
                     "This field is required."
                 );
-
                 return;
             }
         });
 
-
-        // =====================================
-        // CUSTOM VALIDATION
-        // =====================================
-
-        const fields =
-            currentFormStep.querySelectorAll(
-                "input, select, textarea"
-            );
-
-
+        const fields = currentFormStep.querySelectorAll("input, select, textarea");
         fields.forEach((input) => {
-
             if (
                 input.disabled ||
                 !isFieldVisible(input) ||
@@ -446,34 +335,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-
-            const value =
-                input.value.trim();
-
-
+            const value = input.value.trim();
             if (!value) {
                 return;
             }
-
-
-            // ---------------------------------
-            // NAME
-            // ---------------------------------
 
             if (
                 input.id === "first-name" ||
                 input.id === "last-name"
             ) {
 
-                const namePattern =
-                    /^[A-Za-zÀ-ÿ\s'-]+$/;
-
+                const namePattern = /^[A-Za-zÀ-ÿ\s'-]+$/;
                 if (
                     !namePattern.test(value)
                 ) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please enter letters only."
@@ -481,26 +357,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
-            // ---------------------------------
-            // PHONE
-            // ---------------------------------
-
             if (input.id === "phone") {
-
                 if (!/^[0-9]+$/.test(value)) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please enter numbers only."
                     );
 
                 } else if (value.length !== 10) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Phone number must contain exactly 10 digits."
@@ -508,13 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
-            // ---------------------------------
-            // EMAIL
-            // ---------------------------------
             if (input.type === "email") {
-                const emailPattern =
-                    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]{2,}(?:\.[A-Za-z0-9-]{2,})*\.[A-Za-z]{2,}$/;
+                const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]{2,}(?:\.[A-Za-z0-9-]{2,})*\.[A-Za-z]{2,}$/;
                 if (!emailPattern.test(value)) {
                     isValid = false;
                     showError(
@@ -524,19 +385,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ---------------------------------
-            // POSTAL CODE
-            // ---------------------------------
-
             if (input.id === "postal-code") {
 
-                const postalCodePattern =
-                    /^[A-Za-z0-9][A-Za-z0-9\s-]{2,9}$/;
-
+                const postalCodePattern = /^[A-Za-z0-9][A-Za-z0-9\s-]{2,9}$/;
                 if (!postalCodePattern.test(value)) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please enter a valid postal code."
@@ -544,23 +397,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
-            // ---------------------------------
-            // NUMBER FIELDS
-            // ---------------------------------
-
             if (
                 input.type === "number" &&
                 value !== ""
             ) {
-
-                const numberValue =
-                    Number(value);
-
+                const numberValue = Number(value);
                 if (Number.isNaN(numberValue)) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please enter a valid number."
@@ -568,19 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
-            // ---------------------------------
-            // DATE
-            // ---------------------------------
-
             if (input.type === "date") {
-
-                const selectedDate =
-                    new Date(value);
-
-                const today =
-                    new Date();
-
+                const selectedDate = new Date(value);
+                const today = new Date();
                 today.setHours(
                     0,
                     0,
@@ -591,9 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (
                     selectedDate >= today
                 ) {
-
                     isValid = false;
-
                     showError(
                         input,
                         "Please select a valid date of birth."
@@ -602,78 +433,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-
-        // =====================================
-        // GENDER GROUP
-        // =====================================
-
-        const genderInputs =
-            currentFormStep.querySelectorAll(
-                'input[name="gender"]'
-            );
-
+        const genderInputs = currentFormStep.querySelectorAll('input[name="gender"]');
         if (genderInputs.length) {
 
-            const genderSelected =
-                [...genderInputs].some(
-                    (radio) => radio.checked
-                );
-
+            const genderSelected = [...genderInputs].some((radio) => radio.checked);
             if (!genderSelected) {
-
                 isValid = false;
-
                 showError(
                     genderInputs[0],
                     "Please select your gender."
                 );
             }
         }
-
-
         return isValid;
     }
 
-
-    // =========================================
-    // SAVE STEP
-    // =========================================
-
     function collectStepData(stepIndex) {
-
-        const step =
-            formSteps[stepIndex];
-
+        const step = formSteps[stepIndex];
         const data = {};
 
-        step.querySelectorAll(
-            "input, select, textarea"
-        ).forEach((input) => {
-
+        step.querySelectorAll("input, select, textarea").forEach((input) => {
             if (!input.name) {
                 return;
             }
-
-
             // Radio
             if (input.type === "radio") {
-
                 if (input.checked) {
                     data[input.name] = input.value;
                 }
-
                 return;
             }
-
-
             // File
             if (input.type === "file") {
-
                 if (input.files.length) {
-
-                    const file =
-                        input.files[0];
-
+                    const file = input.files[0];
                     data[input.name] = {
                         type: "file",
                         name: file.name,
@@ -685,391 +478,187 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-
-            data[input.name] =
-                input.value;
+            data[input.name] = input.value;
         });
-
         return data;
     }
 
 
     function saveCompletedStep(stepIndex) {
+        const savedForm = getSavedForm();
+        const newData = collectStepData(stepIndex);
+        const oldData = savedForm.completedSteps[stepIndex] || {};
+        const step = formSteps[stepIndex];
 
-        const savedForm =
-            getSavedForm();
-
-        const newData =
-            collectStepData(stepIndex);
-
-        const oldData =
-            savedForm.completedSteps[
-            stepIndex
-            ] || {};
-
-
-        // Preserve previously saved file data
-        // when the browser file input is empty
-        // after a page refresh.
-
-        const step =
-            formSteps[stepIndex];
-
-        step.querySelectorAll(
-            'input[type="file"]'
-        ).forEach((input) => {
-
+        step.querySelectorAll('input[type="file"]').forEach((input) => {
             if (
                 !input.files.length &&
                 oldData[input.name]
             ) {
-
-                newData[input.name] =
-                    oldData[input.name];
+                newData[input.name] = oldData[input.name];
             }
         });
-
-
-        savedForm.completedSteps[
-            stepIndex
-        ] = newData;
-
-
-        savedForm.maxUnlockedStep =
-            Math.max(
-                savedForm.maxUnlockedStep || 0,
-                stepIndex + 1
-            );
-
-
+        savedForm.completedSteps[stepIndex] = newData;
+        savedForm.maxUnlockedStep = Math.max(
+            savedForm.maxUnlockedStep || 0,
+            stepIndex + 1
+        );
         saveFormData(savedForm);
     }
 
-
-    // =========================================
-    // RESTORE STEP
-    // =========================================
-
     function clearStep(stepIndex) {
-
-        const step =
-            formSteps[stepIndex];
-
-        step.querySelectorAll(
-            "input, select, textarea"
-        ).forEach((input) => {
-
+        const step = formSteps[stepIndex];
+        step.querySelectorAll("input, select, textarea").forEach((input) => {
             if (
                 input.type === "radio" ||
                 input.type === "checkbox"
             ) {
-
                 input.checked = false;
-
-
-            } else if (
+            }
+            else if (
                 input.type === "file"
             ) {
-
                 input.value = "";
-
-                // Reset visible filename
-                const display =
-                    input
-                        .closest("label")
-                        ?.querySelector(
-                            ".document-input-field"
-                        );
-
+                const display = input.closest("label")?.querySelector(".document-input-field");
                 if (display) {
-
-                    display.textContent =
-                        display.dataset.defaultText ||
-                        "Upload document";
+                    display.textContent = display.dataset.defaultText || "Upload document";
                 }
-
-
-            } else if (
+            }
+            else if (
                 input.tagName === "SELECT"
             ) {
-
-                // Clear the actual select
                 input.value = "";
 
-                // IMPORTANT:
-                // Update Nice Select UI
                 if (
                     typeof $ !== "undefined"
                 ) {
 
                     $(input).niceSelect("update");
                 }
-
-
             } else {
-
                 input.value = "";
             }
-
             removeError(input);
         });
-
 
         updateEmploymentFields();
     }
 
-    function isDocumentStep(stepIndex) {
-        return stepIndex === formSteps.length - 2;
-    }
-
-
-    function resetDocumentStep() {
-
-        const documentStepIndex =
-            formSteps.length - 2;
-
-        clearStep(documentStepIndex);
-
-        const documentStep =
-            formSteps[documentStepIndex];
-
-        // Reset the visible upload text
-        documentStep
-            .querySelectorAll(".document-input-field")
-            .forEach((element) => {
-
-                const defaultText =
-                    element.dataset.defaultText;
-
-                if (defaultText) {
-                    element.textContent =
-                        defaultText;
-                }
-            });
-    }
-
-
     function restoreStep(stepIndex) {
-
-        const savedForm =
-            getSavedForm();
-
-        const savedData =
-            savedForm.completedSteps[
-            stepIndex
-            ];
+        const savedForm = getSavedForm();
+        const savedData = savedForm.completedSteps[stepIndex];
 
         if (!savedData) {
-
             clearStep(stepIndex);
-
             return;
         }
 
+        const step = formSteps[stepIndex];
 
-        const step =
-            formSteps[stepIndex];
-
-
-        step.querySelectorAll(
-            "input, select, textarea"
-        ).forEach((input) => {
-
+        step.querySelectorAll("input, select, textarea").forEach((input) => {
             if (!input.name) {
                 return;
             }
 
-
-            const savedValue =
-                savedData[input.name];
-
-
+            const savedValue = savedData[input.name];
             if (
                 savedValue === undefined
             ) {
                 return;
             }
 
-
-            // ---------------------------------
-            // RADIO
-            // ---------------------------------
-
             if (input.type === "radio") {
-
                 input.checked =
                     savedValue === input.value;
-
                 return;
             }
-
-
-            // ---------------------------------
-            // FILE
-            // ---------------------------------
-
 
             if (input.type === "file") {
-                const display =
-                    input
-                        .closest("label")
-                        ?.querySelector(
-                            ".document-input-field"
-                        );
+                const display = input.closest("label")?.querySelector(".document-input-field");
 
                 if (display) {
-
                     if (
-                        savedValue &&
-                        savedValue.name
+                        savedValue && savedValue.name
                     ) {
-
-                        display.textContent =
-                            savedValue.name;
+                        display.textContent = savedValue.name;
 
                     } else {
-
-                        display.textContent =
-                            "Upload document";
+                        display.textContent = "Upload document";
                     }
                 }
-
                 return;
             }
 
-
-            // ---------------------------------
-            // SELECT / TEXT / TEXTAREA
-            // ---------------------------------
-
-            input.value =
-                savedValue;
-
-
-            // ---------------------------------
-            // NICE SELECT
-            // ---------------------------------
+            input.value = savedValue;
 
             if (
-                input.tagName === "SELECT" &&
-                typeof $ !== "undefined"
+                input.tagName === "SELECT" && typeof $ !== "undefined"
             ) {
-
                 $(input).niceSelect("update");
             }
         });
-
         updateEmploymentFields();
     }
 
-
-    // =========================================
-    // RESTORE ALL SAVED DATA
-    // =========================================
-
     function restoreSavedData() {
 
-        const savedForm =
-            getSavedForm();
+        const savedForm = getSavedForm();
 
-        maxUnlockedStep =
-            savedForm.maxUnlockedStep || 0;
-
+        maxUnlockedStep = savedForm.maxUnlockedStep || 0;
         if (
             maxUnlockedStep >= formSteps.length
         ) {
-            maxUnlockedStep =
-                formSteps.length - 1;
+            maxUnlockedStep = formSteps.length - 1;
         }
-
-        // =========================================
-        // RESTORE STEPS 1, 2, 3...
-        // BUT NEVER RESTORE DOCUMENT STEP
-        // =========================================
 
         for (
             let index = 0;
             index < maxUnlockedStep;
             index++
         ) {
-
             restoreStep(index);
         }
 
-        // =========================================
-        // AFTER ALL STEPS ARE COMPLETED
-        // SHOW REVIEW
-        // =========================================
-
         if (
-            maxUnlockedStep >=
-            formSteps.length - 1
+            maxUnlockedStep >= formSteps.length - 1
         ) {
-
-            currentStep =
-                formSteps.length - 1;
-
+            currentStep = formSteps.length - 1;
         } else {
-
-            currentStep =
-                maxUnlockedStep;
+            currentStep = maxUnlockedStep;
         }
-
-
         updateEmploymentFields();
-
         showStep(currentStep);
-
         updateReview();
     }
 
-    // =========================================
-    // SHOW STEP
-    // =========================================
-
     function showStep(stepIndex) {
-
-        formSteps.forEach(
-            (step, index) => {
-
-                step.classList.toggle(
-                    "active",
-                    index === stepIndex
-                );
-            }
+        formSteps.forEach((step, index) => {
+            step.classList.toggle(
+                "active",
+                index === stepIndex
+            );
+        }
         );
-
-
-        // -------------------------------------
-        // PROGRESS STATE
-        // -------------------------------------
 
         futureSteps.forEach(
             (step, index) => {
-
                 step.classList.remove(
                     "active",
                     "complete"
                 );
 
-
-                // Completed steps
                 if (
                     index < maxUnlockedStep
                 ) {
-
                     step.classList.add(
                         "active",
                         "complete"
                     );
                 }
 
-
-                // Current step
                 if (
                     index === stepIndex
                 ) {
-
                     step.classList.add(
                         "active"
                     );
@@ -1077,46 +666,27 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         );
 
-
-        // -------------------------------------
-        // BACK BUTTON
-        // -------------------------------------
-
         if (stepIndex === 0) {
-
             backBtn.classList.remove(
                 "active"
             );
 
         } else {
-
             backBtn.classList.add(
                 "active"
             );
         }
 
-
-        // -------------------------------------
-        // BUTTONS
-        // -------------------------------------
-
         if (
-            stepIndex ===
-            formSteps.length - 1
+            stepIndex === formSteps.length - 1
         ) {
-
-            nextBtn.style.display =
-                "none";
-
+            nextBtn.style.display = "none";
             submitBtn.classList.add(
                 "active"
             );
 
         } else {
-
-            nextBtn.style.display =
-                "";
-
+            nextBtn.style.display = "";
             submitBtn.classList.remove(
                 "active"
             );
@@ -1127,380 +697,198 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     // PROGRESS CLICK
     // =========================================
+    futureSteps.forEach((step, index) => {
+        step.addEventListener("click", () => {
 
-    futureSteps.forEach(
-        (step, index) => {
+            if (
+                index >
+                maxUnlockedStep
+            ) {
+                return;
+            }
 
-            step.addEventListener(
-                "click",
-                () => {
+            if (
+                index !== currentStep
+            ) {
+                restoreStep(currentStep);
+                currentStep = index;
+                restoreStep(currentStep);
+            }
 
-                    /*
-                     * Only unlocked steps can
-                     * be clicked.
-                     *
-                     * Example:
-                     *
-                     * Step 1 = complete
-                     * Step 2 = complete
-                     * Step 3 = active
-                     * Step 4 = locked
-                     *
-                     * Step 1, 2 and 3 clickable.
-                     * Step 4 and 5 locked.
-                     */
-
-                    if (
-                        index >
-                        maxUnlockedStep
-                    ) {
-                        return;
-                    }
-
-
-                    // Current unfinished data
-                    // was not committed.
-                    // Discard it before leaving.
-                    if (
-                        index !== currentStep
-                    ) {
-
-                        restoreStep(currentStep);
-
-                        currentStep = index;
-
-                        restoreStep(currentStep);
-                    }
-
-
-                    showStep(currentStep);
-
-                    updateReview();
-                }
-            );
+            showStep(currentStep);
+            updateReview();
         }
-    );
-
+        );
+    });
 
     // =========================================
     // CONTINUE BUTTON
     // =========================================
 
-    nextBtn.addEventListener(
-        "click",
-        () => {
-
-            if (!validateStep()) {
-                return;
-            }
-
-
-            // ---------------------------------
-            // Save only after validation
-            // + Continue click
-            // ---------------------------------
-
-            saveCompletedStep(
-                currentStep
-            );
-
-
-            // ---------------------------------
-            // Unlock next step
-            // ---------------------------------
-
-            maxUnlockedStep =
-                Math.max(
-                    maxUnlockedStep,
-                    currentStep + 1
-                );
-
-
-            currentStep++;
-
-
-            // If current step is not last
-            if (
-                currentStep <
-                formSteps.length
-            ) {
-
-                // Save progress state
-                const savedForm =
-                    getSavedForm();
-
-                savedForm.maxUnlockedStep =
-                    maxUnlockedStep;
-
-                saveFormData(savedForm);
-
-
-                // Clear new step because it
-                // has not been filled yet.
-                // If the next step was already completed,
-                // restore its saved data.
-                //
-                // Otherwise, keep it empty for first-time entry.
-
-                const nextStepData =
-                    savedForm.completedSteps[
-                    currentStep
-                    ];
-
-                if (nextStepData) {
-
-                    restoreStep(currentStep);
-
-                } else {
-
-                    clearStep(currentStep);
-                }
-
-
-                showStep(currentStep);
-
-                updateReview();
-            }
+    nextBtn.addEventListener("click", () => {
+        if (!validateStep()) {
+            return;
         }
-    );
 
+        saveCompletedStep(
+            currentStep
+        );
+
+        maxUnlockedStep = Math.max(
+            maxUnlockedStep,
+            currentStep + 1
+        );
+
+        currentStep++;
+
+        if (
+            currentStep <
+            formSteps.length
+        ) {
+
+            const savedForm = getSavedForm();
+            savedForm.maxUnlockedStep = maxUnlockedStep;
+            saveFormData(savedForm);
+
+            const nextStepData = savedForm.completedSteps[currentStep];
+            if (nextStepData) {
+                restoreStep(currentStep);
+            } else {
+                clearStep(currentStep);
+            }
+
+            showStep(currentStep);
+            updateReview();
+        }
+    });
 
     // =========================================
     // BACK BUTTON
     // =========================================
-
-    backBtn.addEventListener(
-        "click",
-        () => {
-
-            if (currentStep === 0) {
-                return;
-            }
-
-
-            // Restore the current step's
-            // last saved data before leaving it.
-            restoreStep(currentStep);
-
-
-            currentStep--;
-
-
-            // Restore the previous step,
-            // including Step 4.
-            restoreStep(currentStep);
-
-
-            showStep(currentStep);
-
-            updateReview();
+    backBtn.addEventListener("click", () => {
+        if (currentStep === 0) {
+            return;
         }
-    );
 
+        restoreStep(currentStep);
+        currentStep--;
+        restoreStep(currentStep);
+        showStep(currentStep);
+        updateReview();
+    });
 
     // =========================================
     // LIVE ERROR REMOVAL
     // =========================================
+    form.addEventListener("input", (event) => {
 
-    form.addEventListener(
-        "input",
-        (event) => {
+        const input = event.target;
 
-            const input =
-                event.target;
+        if (
+            input.matches(
+                "input, textarea"
+            )
+        ) {
+            removeError(input);
+        }
+    });
 
-            if (
-                input.matches(
-                    "input, textarea"
-                )
-            ) {
+    form.addEventListener("change", (event) => {
+        const input = event.target;
+        if (
+            input.matches(
+                "input, select, textarea"
+            )
+        ) {
+            removeError(input);
+        }
+        if (
+            input.name === "gender"
+        ) {
+            const genderInputs = form.querySelectorAll('input[name="gender"]');
+            const selected = [...genderInputs].some((radio) => radio.checked);
 
-                removeError(input);
+            if (selected) {
+                removeError(
+                    genderInputs[0]
+                );
             }
         }
-    );
 
-
-    form.addEventListener(
-        "change",
-        (event) => {
-
-            const input =
-                event.target;
-
-
-            if (
-                input.matches(
-                    "input, select, textarea"
-                )
-            ) {
-
-                removeError(input);
-            }
-
-
-            // Gender
-            if (
-                input.name === "gender"
-            ) {
-
-                const genderInputs =
-                    form.querySelectorAll(
-                        'input[name="gender"]'
-                    );
-
-                const selected =
-                    [...genderInputs]
-                        .some(
-                            (radio) =>
-                                radio.checked
-                        );
-
-                if (selected) {
-
-                    removeError(
-                        genderInputs[0]
-                    );
-                }
-            }
-
-
-            // Employment
-            if (
-                input.id ===
-                "employment-status"
-            ) {
-
-                removeError(input);
-
-                updateEmploymentFields();
-            }
+        if (
+            input.id === "employment-status"
+        ) {
+            removeError(input);
+            updateEmploymentFields();
         }
-    );
-
+    });
 
     // =========================================
     // NICE SELECT OPTION CLICK
     // =========================================
-
-    form.addEventListener(
-        "click",
-        (event) => {
-
-            const option =
-                event.target.closest(
-                    ".nice-select .option"
-                );
-
-            if (!option) {
-                return;
-            }
-
-
-            const niceSelect =
-                option.closest(
-                    ".nice-select"
-                );
-
-            if (!niceSelect) {
-                return;
-            }
-
-
-            const select =
-                niceSelect.previousElementSibling;
-
-            if (
-                select &&
-                select.tagName === "SELECT"
-            ) {
-
-                removeError(select);
-
-                setTimeout(() => {
-
-                    updateEmploymentFields();
-
-                }, 0);
-            }
+    form.addEventListener("click", (event) => {
+        const option = event.target.closest(".nice-select .option");
+        if (!option) {
+            return;
         }
-    );
 
+        const niceSelect = option.closest(".nice-select");
+        if (!niceSelect) {
+            return;
+        }
+
+
+        const select = niceSelect.previousElementSibling;
+        if (
+            select &&
+            select.tagName === "SELECT"
+        ) {
+            removeError(select);
+            setTimeout(() => {
+                updateEmploymentFields();
+            }, 0);
+        }
+    });
 
     // =========================================
     // FILE CHANGE
     // =========================================
+    form.querySelectorAll('input[type="file"]').forEach((input) => {
+        input.addEventListener("change", () => {
 
-    form.querySelectorAll(
-        'input[type="file"]'
-    ).forEach(
-        (input) => {
+            removeError(input);
+            const file = input.files[0];
 
-            input.addEventListener(
-                "change",
-                () => {
+            if (!file) {
+                return;
+            }
 
-                    removeError(input);
+            const display = input.closest("label")?.querySelector(".document-input-field");
 
-                    const file =
-                        input.files[0];
-
-                    if (!file) {
-                        return;
-                    }
-
-
-                    const display =
-                        input
-                            .closest("label")
-                            ?.querySelector(
-                                ".document-input-field"
-                            );
-
-                    if (display) {
-
-                        // Remember the original placeholder
-                        // before replacing it.
-                        if (!display.dataset.defaultText) {
-
-                            display.dataset.defaultText =
-                                display.textContent;
-                        }
-
-                        display.textContent =
-                            file.name;
-                    }
+            if (display) {
+                if (!display.dataset.defaultText) {
+                    display.dataset.defaultText = display.textContent;
                 }
-            );
-        }
-    );
-
+                display.textContent = file.name;
+            }
+        });
+    });
 
     // =========================================
     // REVIEW
     // =========================================
-
     function getDisplayValue(input) {
 
         if (!input) {
             return "Not provided";
         }
 
-
         if (
             input.type === "radio"
         ) {
-
-            const checked =
-                document.querySelector(
-                    `input[name="${input.name}"]:checked`
-                );
-
-            return checked
-                ? getRadioLabel(checked)
-                : "Not selected";
+            const checked = document.querySelector(`input[name="${input.name}"]:checked`);
+            return checked ? getRadioLabel(checked) : "Not selected";
         }
-
 
         if (
             input.type === "file"
@@ -1510,26 +898,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return input.files[0].name;
             }
 
-
-            const savedForm =
-                getSavedForm();
-
-            const step =
-                input.closest(".form-step");
-
-            const stepIndex =
-                formSteps.indexOf(step);
-
-            const savedData =
-                savedForm.completedSteps[
-                stepIndex
-                ];
+            const savedForm = getSavedForm();
+            const step = input.closest(".form-step");
+            const stepIndex = formSteps.indexOf(step);
+            const savedData = savedForm.completedSteps[stepIndex];
 
             if (
                 savedData &&
                 savedData[input.name]
             ) {
-
                 return savedData[
                     input.name
                 ].name;
@@ -1545,8 +922,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const selectedOption =
                 input.options[
-                input.selectedIndex
-                ];
+                input.selectedIndex];
 
             return selectedOption
                 ? selectedOption.textContent.trim()
@@ -2096,9 +1472,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         );
 
-
+    enableAllSelectOptions();
+    restoreSavedData();
     updateEmploymentFields();
 
-    restoreSavedData();
 
+
+    function enableAllSelectOptions() {
+        document.querySelectorAll("select").forEach((select) => {
+            Array.from(select.options).forEach((option, index) => {
+                const isPlaceholder = index === 0 && option.value.trim() === "";
+
+                if (isPlaceholder) {
+                    option.disabled = true;
+                    option.setAttribute("disabled", "");
+                } else {
+                    option.disabled = false;
+                    option.removeAttribute("disabled");
+                }
+            });
+
+            refreshNiceSelect(select);
+        });
+    }
+});
+
+
+document.addEventListener("input", function (event) {
+    const input = event.target;
+
+    if (input.matches("input[type='number'][data-max-digits]")) {
+        const maxDigits = Number(input.dataset.maxDigits);
+
+        if (input.value.length > maxDigits) {
+            input.value = input.value.slice(0, maxDigits);
+        }
+    }
 });

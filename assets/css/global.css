@@ -412,6 +412,9 @@ select[required] {
 .input-field[type="date"],
 .input-field[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
+}
+
+.input-field[type="date"] {
   line-height: 1;
 }
 

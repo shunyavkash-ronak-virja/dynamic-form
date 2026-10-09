@@ -17,7 +17,6 @@
   user-select: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
 }
 
 .nice-select:after {
@@ -49,7 +48,7 @@
 
 .nice-select .list {
   width: 100%;
-  max-height: 124px;
+  max-height: 112px;
   display: flex;
   flex-direction: column;
   gap: 14px;
