@@ -235,10 +235,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".employment-status-option").forEach((container) => {
             const isActive = container.dataset.employmentStatus === selectedValue;
 
-            // Show only the selected employment option.
             container.classList.toggle("show", isActive);
             container.style.display = isActive ? "" : "none";
-
             container.querySelectorAll("input, select, textarea").forEach((input) => {
                 input.disabled = !isActive;
 
@@ -253,9 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateGenericConditions();
     }
 
-
     // VALIDATION ----------
-
     function validateStep() {
         const currentFormStep = formSteps[currentStep];
         const requiredFields = currentFormStep.querySelectorAll("[required]");
@@ -268,7 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
                 return;
             }
-
             removeError(input);
 
             if (input.type === "radio") {
@@ -459,6 +454,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!input.name) {
                 return;
             }
+
+            if (!isFieldVisible(input) || input.disabled) {
+                return;
+            }
+
             // Radio
             if (input.type === "radio") {
                 if (input.checked) {
@@ -485,7 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         return data;
     }
-
 
     function saveCompletedStep(stepIndex) {
         const savedForm = getSavedForm();
