@@ -56,6 +56,42 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+
+    function cleanSavedEmploymentData() {
+        if (!employmentStatus) return;
+
+        const savedForm = getSavedForm();
+        const employmentStepIndex = formSteps.findIndex((step) => step.contains(employmentStatus));
+
+        if (employmentStepIndex === -1) return;
+
+        const stepNumber = employmentStepIndex + 1;
+        const savedStepData = savedForm.completedSteps[stepNumber];
+
+        if (!savedStepData) return;
+
+        // Get the employment status saved in localStorage.
+        const selectedValue = savedStepData[employmentStatus.name];
+
+        if (!selectedValue) return;
+
+        // Remove data belonging to every unselected employment option.
+        document.querySelectorAll(".employment-status-option").forEach((container) => {
+            if (container.dataset.employmentStatus === selectedValue) {
+                return;
+            }
+
+            container.querySelectorAll("input, select, textarea").forEach((input) => {
+                if (input.name) {
+                    delete savedStepData[input.name];
+                }
+            });
+        });
+
+        saveFormData(savedForm);
+    }
+
+
     // ERROR HANDLING ----------
     function getErrorElement(input) {
         if (input.tagName === "SELECT") {
@@ -226,6 +262,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // EMPLOYMENT CONDITIONAL FIELDS ----------
+
+    function clearInactiveEmploymentData(selectedValue) {
+        if (!employmentStatus) return;
+
+        const employmentStep = employmentStatus.closest(".form-step");
+        const stepIndex = formSteps.indexOf(employmentStep);
+        const savedForm = getSavedForm();
+        const savedStepData = savedForm.completedSteps[stepIndex + 1];
+
+        document.querySelectorAll(".employment-status-option").forEach((container) => {
+            const isActive = container.dataset.employmentStatus === selectedValue;
+
+            // Keep the selected option's fields unchanged.
+            if (isActive) return;
+
+            container.querySelectorAll("input, select, textarea").forEach((input) => {
+
+                if (input.name && savedStepData) {
+                    delete savedStepData[input.name];
+                }
+                if (input.type === "radio" || input.type === "checkbox") {
+                    input.checked = false;
+                } else if (input.type === "file") {
+                    input.value = "";
+                    const display = input.closest("label")?.querySelector(".document-input-field");
+                    if (display) {
+                        display.textContent = display.dataset.defaultText || "Upload document";
+                    }
+                } else {
+                    input.value = "";
+                }
+                removeError(input);
+                if (input.tagName === "SELECT") {
+                    refreshNiceSelect(input);
+                }
+            });
+        });
+
+        // Save the cleaned data without removing other form steps.
+        if (savedStepData) {
+            saveFormData(savedForm);
+        }
+    }
+
 
     function updateEmploymentFields() {
         if (!employmentStatus) return;
@@ -599,6 +679,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function restoreSavedData() {
 
+        cleanSavedEmploymentData();
         const savedForm = getSavedForm();
         maxUnlockedStep = savedForm.maxUnlockedStep || 0;
         if (
@@ -807,12 +888,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if (
-            input.id === "employment-status"
-        ) {
+
+        if (input.id === "employment-status") {
             removeError(input);
+            clearInactiveEmploymentData(input.value.trim());
             updateEmploymentFields();
+            updateReview();
         }
+
     });
 
     // =========================================
