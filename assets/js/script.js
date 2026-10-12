@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const employmentOption = input.closest(".employment-status-option");
 
         if (
-            employmentOption && !employmentOption.classList.contains("active")
+            employmentOption && !employmentOption.classList.contains("show")
         ) {
             return false;
         }
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".employment-status-option").forEach((container) => {
             const isActive = container.dataset.employmentStatus === selectedValue;
 
-            container.classList.toggle("active", isActive);
+            container.classList.toggle("show", isActive);
             container.querySelectorAll("input, select, textarea").forEach((input) => {
                 input.disabled = !isActive;
 
@@ -1002,7 +1002,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ) &&
             !input.closest(
                 ".employment-status-option"
-            ).classList.contains("active")
+            ).classList.contains("show")
         ) {
 
             return;

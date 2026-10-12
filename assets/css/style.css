@@ -152,7 +152,7 @@
   display: none;
 }
 
-.employment-status-option.active {
+.employment-status-option.show {
   display: grid;
 }
 
