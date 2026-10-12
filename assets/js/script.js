@@ -226,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // EMPLOYMENT CONDITIONAL FIELDS ----------
+
     function updateEmploymentFields() {
         if (!employmentStatus) return;
 
@@ -234,7 +235,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".employment-status-option").forEach((container) => {
             const isActive = container.dataset.employmentStatus === selectedValue;
 
+            // Show only the selected employment option.
             container.classList.toggle("show", isActive);
+            container.style.display = isActive ? "" : "none";
+
             container.querySelectorAll("input, select, textarea").forEach((input) => {
                 input.disabled = !isActive;
 
@@ -248,6 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         updateGenericConditions();
     }
+
 
     // VALIDATION ----------
 
@@ -284,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (input.type === "file") {
 
                 const savedForm = getSavedForm();
-                const savedStepData = savedForm.completedSteps[currentStep];
+                const savedStepData = savedForm.completedSteps[currentStep + 1];
                 const hasSavedFile = savedStepData && savedStepData[input.name];
 
                 if (
@@ -485,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function saveCompletedStep(stepIndex) {
         const savedForm = getSavedForm();
         const newData = collectStepData(stepIndex);
-        const oldData = savedForm.completedSteps[stepIndex] || {};
+        const oldData = savedForm.completedSteps[stepIndex + 1] || {};
         const step = formSteps[stepIndex];
 
         step.querySelectorAll('input[type="file"]').forEach((input) => {
@@ -496,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 newData[input.name] = oldData[input.name];
             }
         });
-        savedForm.completedSteps[stepIndex] = newData;
+        savedForm.completedSteps[stepIndex + 1] = newData;
         savedForm.maxUnlockedStep = Math.max(
             savedForm.maxUnlockedStep || 0,
             stepIndex + 1
@@ -526,11 +531,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 input.tagName === "SELECT"
             ) {
                 input.value = "";
-
                 if (
                     typeof $ !== "undefined"
                 ) {
-
                     $(input).niceSelect("update");
                 }
             } else {
@@ -538,13 +541,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             removeError(input);
         });
-
         updateEmploymentFields();
     }
 
     function restoreStep(stepIndex) {
         const savedForm = getSavedForm();
-        const savedData = savedForm.completedSteps[stepIndex];
+        const savedData = savedForm.completedSteps[stepIndex + 1];
 
         if (!savedData) {
             clearStep(stepIndex);
@@ -552,7 +554,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const step = formSteps[stepIndex];
-
         step.querySelectorAll("input, select, textarea").forEach((input) => {
             if (!input.name) {
                 return;
@@ -566,8 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (input.type === "radio") {
-                input.checked =
-                    savedValue === input.value;
+                input.checked = savedValue === input.value;
                 return;
             }
 
@@ -601,7 +601,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function restoreSavedData() {
 
         const savedForm = getSavedForm();
-
         maxUnlockedStep = savedForm.maxUnlockedStep || 0;
         if (
             maxUnlockedStep >= formSteps.length
@@ -631,12 +630,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showStep(stepIndex) {
         formSteps.forEach((step, index) => {
-            step.classList.toggle(
-                "active",
-                index === stepIndex
-            );
-        }
-        );
+            step.classList.toggle("active", index === stepIndex);
+        });
 
         futureSteps.forEach(
             (step, index) => {
@@ -748,7 +743,10 @@ document.addEventListener("DOMContentLoaded", () => {
             savedForm.maxUnlockedStep = maxUnlockedStep;
             saveFormData(savedForm);
 
-            const nextStepData = savedForm.completedSteps[currentStep];
+
+
+
+            const nextStepData = savedForm.completedSteps[currentStep + 1];
             if (nextStepData) {
                 restoreStep(currentStep);
             } else {
@@ -891,7 +889,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const savedForm = getSavedForm();
             const step = input.closest(".form-step");
             const stepIndex = formSteps.indexOf(step);
-            const savedData = savedForm.completedSteps[stepIndex];
+            const savedData = savedForm.completedSteps[stepIndex + 1];
 
             if (
                 savedData &&
