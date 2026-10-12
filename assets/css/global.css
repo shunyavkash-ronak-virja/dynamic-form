@@ -256,9 +256,9 @@ input::-webkit-inner-spin-button {
 }
 
 .label-caption {
-  vertical-align: super;
-  font-size: 10px;
+  font-size: 14px;
   color: var(--grey-70);
+  color: var(--orange);
 }
 
 .input-field,
@@ -411,7 +411,7 @@ select[required] {
 
 .input-error {
   color: var(--red);
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .input-field.input-error-field {

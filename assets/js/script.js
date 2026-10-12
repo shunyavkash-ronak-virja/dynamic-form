@@ -23,10 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.querySelector(".next-btn");
     const submitBtn = document.querySelector(".submit-btn");
     const confirmationMessage = document.querySelector(".confirmation-message");
-    const startNewApplicationBtn =
-        confirmationMessage?.querySelector(".btn.primary-btn");
-    const employmentStatus =
-        document.getElementById("employment-status");
+    const startNewApplicationBtn = confirmationMessage?.querySelector(".btn.primary-btn");
+    const employmentStatus = document.getElementById("employment-status");
     const STORAGE_KEY = "dynamicMultiStepForm";
     let currentStep = 0;
     let maxUnlockedStep = 0;
@@ -781,9 +779,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // LIVE ERROR REMOVAL
     // =========================================
     form.addEventListener("input", (event) => {
-
         const input = event.target;
-
         if (
             input.matches(
                 "input, textarea"
@@ -807,7 +803,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             const genderInputs = form.querySelectorAll('input[name="gender"]');
             const selected = [...genderInputs].some((radio) => radio.checked);
-
             if (selected) {
                 removeError(
                     genderInputs[0]
@@ -837,7 +832,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-
         const select = niceSelect.previousElementSibling;
         if (
             select &&
@@ -858,13 +852,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             removeError(input);
             const file = input.files[0];
-
             if (!file) {
                 return;
             }
 
             const display = input.closest("label")?.querySelector(".document-input-field");
-
             if (display) {
                 if (!display.dataset.defaultText) {
                     display.dataset.defaultText = display.textContent;
@@ -882,14 +874,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!input) {
             return "Not provided";
         }
-
         if (
             input.type === "radio"
         ) {
             const checked = document.querySelector(`input[name="${input.name}"]:checked`);
             return checked ? getRadioLabel(checked) : "Not selected";
         }
-
         if (
             input.type === "file"
         ) {
@@ -911,51 +901,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     input.name
                 ].name;
             }
-
             return "Not uploaded";
         }
-
-
         if (
             input.tagName === "SELECT"
         ) {
-
-            const selectedOption =
-                input.options[
-                input.selectedIndex];
-
-            return selectedOption
-                ? selectedOption.textContent.trim()
-                : "Not selected";
+            const selectedOption = input.options[input.selectedIndex];
+            return selectedOption ? selectedOption.textContent.trim() : "Not selected";
         }
-
-
-        return input.value.trim()
-            || "Not provided";
+        return input.value.trim() || "Not provided";
     }
 
-
     function getRadioLabel(radio) {
-
-        const label =
-            radio.closest("label");
-
+        const label = radio.closest("label");
         if (!label) {
             return radio.value;
         }
-
         return label.textContent.trim();
     }
-
 
     function createReviewRow(
         label,
         value
     ) {
-
-        const row =
-            document.createElement("tr");
-
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td>${escapeHtml(label)}</td>
             <td>
@@ -966,13 +935,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </td>
         `;
-
         return row;
     }
 
-
     function escapeHtml(value) {
-
         return String(value)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -981,20 +947,16 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/'/g, "&#039;");
     }
 
-
     function addReviewRow(
         tbody,
         label,
         selector
     ) {
 
-        const input =
-            document.querySelector(selector);
-
+        const input = document.querySelector(selector);
         if (!input) {
             return;
         }
-
 
         if (
             input.closest(
@@ -1004,15 +966,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 ".employment-status-option"
             ).classList.contains("show")
         ) {
-
             return;
         }
 
-
-        const value =
-            getDisplayValue(input);
-
-
+        const value = getDisplayValue(input);
         tbody.appendChild(
             createReviewRow(
                 label,
@@ -1021,31 +978,20 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-
     function updateReview() {
-
-        const reviewBlocks =
-            document.querySelectorAll(
-                ".form-step-five .review-table-block"
-            );
-
+        const reviewBlocks = document.querySelectorAll(".form-step-five .review-table-block");
         if (reviewBlocks.length < 3) {
             return;
         }
-
 
         // =====================================
         // PERSONAL DETAILS
         // =====================================
 
-        const personalBody =
-            reviewBlocks[0]
-                .querySelector(".review-tbody");
+        const personalBody = reviewBlocks[0].querySelector(".review-tbody");
 
         if (personalBody) {
-
             personalBody.innerHTML = "";
-
             addReviewRow(
                 personalBody,
                 "First Name",
@@ -1089,32 +1035,21 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-
         // =====================================
         // EMPLOYMENT
         // =====================================
 
-        const employmentBody =
-            reviewBlocks[1]
-                .querySelector(".review-tbody");
-
+        const employmentBody = reviewBlocks[1].querySelector(".review-tbody");
         if (employmentBody) {
-
             employmentBody.innerHTML = "";
-
             addReviewRow(
                 employmentBody,
                 "Status",
                 "#employment-status"
             );
 
-
-            const status =
-                employmentStatus?.value;
-
-
+            const status = employmentStatus?.value;
             if (status === "yes") {
-
                 addReviewRow(
                     employmentBody,
                     "Job Title",
@@ -1140,9 +1075,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
 
-
             if (status === "no") {
-
                 addReviewRow(
                     employmentBody,
                     "Current Situation",
@@ -1158,7 +1091,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (status === "self-employed") {
-
                 addReviewRow(
                     employmentBody,
                     "Business Name",
@@ -1184,9 +1116,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
 
-
             if (status === "student") {
-
                 addReviewRow(
                     employmentBody,
                     "Institution Name",
@@ -1216,14 +1146,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // =====================================
         // ADDRESS
-        // =====================================
-
-        const addressBody =
-            reviewBlocks[2]
-                .querySelector(".review-tbody");
-
+        // ===================================== 
+        const addressBody = reviewBlocks[2].querySelector(".review-tbody");
         if (addressBody) {
-
             addressBody.innerHTML = "";
 
             addReviewRow(
@@ -1274,12 +1199,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // DOCUMENTS
         // =====================================
 
-        const documentBody =
-            reviewBlocks[3]
-                ?.querySelector(".review-tbody");
+        const documentBody = reviewBlocks[3]?.querySelector(".review-tbody");
 
         if (documentBody) {
-
             documentBody.innerHTML = "";
 
             addReviewRow(
@@ -1324,153 +1246,97 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     // SUBMIT
     // =========================================
+    submitBtn.addEventListener("click", () => {
+        updateReview();
 
-    submitBtn.addEventListener(
-        "click",
-        () => {
-
-            updateReview();
-
-
-            // Make sure review step
-            // itself is displayed.
-            if (
-                currentStep !==
-                formSteps.length - 1
-            ) {
-                return;
-            }
-
-
-            // Final validation:
-            // all previously completed
-            // steps are already validated
-            // before Continue.
-            //
-            // Review itself has no required
-            // input fields.
-
-
-            // Clear saved application.
-            localStorage.removeItem(
-                STORAGE_KEY
-            );
-
-
-            // Hide form/progress.
-            document
-                .querySelector(
-                    ".future-step-wrapper"
-                )
-                .style.display = "none";
-
-            form.style.display = "none";
-
-
-            // Show confirmation.
-            confirmationMessage.classList.add(
-                "active"
-            );
+        // Make sure review step
+        // itself is displayed.
+        if (
+            currentStep !== formSteps.length - 1
+        ) {
+            return;
         }
-    );
 
+        // Final validation:
+        // all previously completed
+        // steps are already validated
+        // before Continue.
+        //
+        // Review itself has no required
+        // input fields.
+
+
+        // Clear saved application.
+        localStorage.removeItem(
+            STORAGE_KEY
+        );
+
+        // Hide form/progress.
+        document.querySelector(".future-step-wrapper").style.display = "none";
+        form.style.display = "none";
+
+        // Show confirmation.
+        confirmationMessage.classList.add("active");
+    });
 
     // =========================================
     // START NEW APPLICATION
     // =========================================
 
     if (startNewApplicationBtn) {
+        startNewApplicationBtn.addEventListener("click", () => {
 
-        startNewApplicationBtn.addEventListener(
-            "click",
-            () => {
+            // Remove saved application
+            localStorage.removeItem(
+                STORAGE_KEY
+            );
 
-                // Remove saved application
-                localStorage.removeItem(
-                    STORAGE_KEY
-                );
-
-                // Reset state
-                currentStep = 0;
-                maxUnlockedStep = 0;
+            // Reset state
+            currentStep = 0;
+            maxUnlockedStep = 0;
 
 
-                // Clear all steps
-                formSteps.forEach(
-                    (_, index) => {
-                        clearStep(index);
+            // Clear all steps
+            formSteps.forEach((_, index) => {
+                clearStep(index);
+            });
+
+            // Clear errors
+            formSteps.forEach((step) => {
+                removeStepErrors(step);
+            });
+
+
+            // Clear document display names
+            document.querySelectorAll(".document-input-field")
+                .forEach((element) => {
+                    const defaultText = element.dataset.defaultText;
+                    if (defaultText) {
+                        element.textContent = defaultText;
                     }
-                );
+                });
 
+            // Hide confirmation
+            confirmationMessage.classList.remove("active");
 
-                // Clear errors
-                formSteps.forEach(
-                    (step) => {
-                        removeStepErrors(step);
-                    }
-                );
+            // Show form/progress
+            document.querySelector(".future-step-wrapper").style.display = "";
+            form.style.display = "";
 
-
-                // Clear document display names
-                document
-                    .querySelectorAll(
-                        ".document-input-field"
-                    )
-                    .forEach(
-                        (element) => {
-
-                            const defaultText =
-                                element.dataset.defaultText;
-
-                            if (defaultText) {
-                                element.textContent =
-                                    defaultText;
-                            }
-                        }
-                    );
-
-
-                // Hide confirmation
-                confirmationMessage.classList.remove(
-                    "active"
-                );
-
-
-                // Show form/progress
-                document
-                    .querySelector(
-                        ".future-step-wrapper"
-                    )
-                    .style.display = "";
-
-                form.style.display = "";
-
-
-                updateEmploymentFields();
-
-                showStep(0);
-
-                updateReview();
-            }
-        );
+            updateEmploymentFields();
+            showStep(0);
+            updateReview();
+        });
     }
-
 
     // =========================================
     // INITIALIZE
     // =========================================
 
-    document
-        .querySelectorAll(
-            ".document-input-field"
-        )
-        .forEach(
-            (element) => {
-
-                element.dataset.defaultText =
-                    element.textContent.trim();
-            }
-        );
+    document.querySelectorAll(".document-input-field")
+        .forEach((element) => {
+            element.dataset.defaultText = element.textContent.trim();
+        });
 
     enableAllSelectOptions();
     restoreSavedData();
