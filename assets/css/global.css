@@ -257,7 +257,6 @@ input::-webkit-inner-spin-button {
 
 .label-caption {
   font-size: 14px;
-  color: var(--grey-70);
   color: var(--orange);
 }
 

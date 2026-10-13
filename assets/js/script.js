@@ -195,6 +195,411 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // =========================================
+    // NATIONALITY, PHONE AND ADDRESS DEPENDENCIES
+    // Add inside the existing DOMContentLoaded
+    // callback, after refreshNiceSelect().
+    // =========================================
+
+    const nationalitySelect = document.getElementById("nationality");
+    const countrySelect = document.getElementById("country");
+    const stateSelect = document.getElementById("state");
+    const cityInput = document.getElementById("city");
+    const postalCodeInput = document.getElementById("postal-code");
+    const phoneInput = document.getElementById("phone");
+
+    const countryConfig = {
+        australia: {
+            name: "Australia",
+            iso2: "au",
+            dialCode: "+61"
+        },
+        brazil: {
+            name: "Brazil",
+            iso2: "br",
+            dialCode: "+55"
+        },
+        canada: {
+            name: "Canada",
+            iso2: "ca",
+            dialCode: "+1"
+        },
+        china: {
+            name: "China",
+            iso2: "cn",
+            dialCode: "+86"
+        },
+        egypt: {
+            name: "Egypt",
+            iso2: "eg",
+            dialCode: "+20"
+        },
+        germany: {
+            name: "Germany",
+            iso2: "de",
+            dialCode: "+49"
+        },
+        india: {
+            name: "India",
+            iso2: "in",
+            dialCode: "+91"
+        },
+        italy: {
+            name: "Italy",
+            iso2: "it",
+            dialCode: "+39"
+        },
+        japan: {
+            name: "Japan",
+            iso2: "jp",
+            dialCode: "+81"
+        },
+        mexico: {
+            name: "Mexico",
+            iso2: "mx",
+            dialCode: "+52"
+        },
+        nigeria: {
+            name: "Nigeria",
+            iso2: "ng",
+            dialCode: "+234"
+        },
+        russia: {
+            name: "Russia",
+            iso2: "ru",
+            dialCode: "+7"
+        },
+        spain: {
+            name: "Spain",
+            iso2: "es",
+            dialCode: "+34"
+        },
+        "united-kingdom": {
+            name: "United Kingdom",
+            iso2: "gb",
+            dialCode: "+44"
+        },
+        "united-states": {
+            name: "United States",
+            iso2: "us",
+            dialCode: "+1"
+        }
+    };
+
+    // Initialise international phone input.
+    const phoneInstance = window.intlTelInput && phoneInput
+        ? window.intlTelInput(phoneInput, {
+            initialCountry: "in",
+            separateDialCode: true,
+            countrySelectorMode: "DROPDOWN",
+            loadUtils: () =>
+                import(
+                    "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
+                )
+        }) : null;
+    let stateRequestId = 0;
+
+    function setSelectOptions(select, placeholder, items) {
+        if (!select) return;
+
+        select.replaceChildren();
+
+        const placeholderOption = document.createElement("option");
+        placeholderOption.value = "";
+        placeholderOption.textContent = placeholder;
+        placeholderOption.disabled = true;
+        placeholderOption.selected = true;
+
+        select.appendChild(placeholderOption);
+
+        items.forEach((item) => {
+            const option = document.createElement("option");
+            option.value = item.value;
+            option.textContent = item.label;
+            select.appendChild(option);
+        });
+
+        refreshNiceSelect(select);
+    }
+
+    function resetCityAndPostalCode() {
+        cityInput.value = "";
+        cityInput.disabled = true;
+        cityInput.placeholder = "Select a state first";
+
+        postalCodeInput.value = "";
+        postalCodeInput.disabled = true;
+        postalCodeInput.placeholder = "Enter city first";
+
+        removeError(cityInput);
+        removeError(postalCodeInput);
+    }
+
+    function resetStateAndAddress() {
+        stateRequestId++;
+
+        setSelectOptions(
+            stateSelect,
+            "Select a country first",
+            []
+        );
+
+        stateSelect.disabled = true;
+        resetCityAndPostalCode();
+        removeError(stateSelect);
+    }
+
+    async function loadStates(countryName, savedState = "") {
+        const requestId = ++stateRequestId;
+
+        setSelectOptions(
+            stateSelect,
+            "Loading states...",
+            []
+        );
+
+        stateSelect.disabled = true;
+        resetCityAndPostalCode();
+
+        if (!countryName) {
+            setSelectOptions(
+                stateSelect,
+                "Select a country first",
+                []
+            );
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "https://countriesnow.space/api/v0.1/countries/states",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        country: countryName
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load states.");
+            }
+
+            const result = await response.json();
+
+            // Ignore outdated responses if the country changed again.
+            if (requestId !== stateRequestId) return;
+
+            const states = result.data?.states || [];
+
+            setSelectOptions(
+                stateSelect,
+                states.length
+                    ? "Select your state / province"
+                    : "No states available",
+                states.map((state) => ({
+                    value: state.name,
+                    label: state.name
+                }))
+            );
+
+            stateSelect.disabled = states.length === 0;
+            refreshNiceSelect(stateSelect);
+
+            if (savedState && states.some(
+                (state) => state.name === savedState
+            )) {
+                stateSelect.value = savedState;
+                refreshNiceSelect(stateSelect);
+
+                cityInput.disabled = false;
+                cityInput.placeholder = "Enter your city";
+
+                postalCodeInput.disabled = !cityInput.value.trim();
+                postalCodeInput.placeholder = cityInput.value.trim()
+                    ? "Enter postal code"
+                    : "Enter city first";
+            }
+        } catch (error) {
+            if (requestId !== stateRequestId) return;
+
+            setSelectOptions(
+                stateSelect,
+                "Unable to load states. Try again.",
+                []
+            );
+
+            stateSelect.disabled = true;
+            console.error("State loading error:", error);
+        }
+    }
+
+    function applyNationality(nationality, options = {}) {
+        const config = countryConfig[nationality];
+
+        if (!config) {
+            countrySelect.value = "";
+            refreshNiceSelect(countrySelect);
+            resetStateAndAddress();
+
+            if (phoneInstance) {
+                phoneInstance.setCountry("in");
+            }
+
+            return;
+        }
+
+        const previousCountry = countrySelect.value;
+
+        // Nationality determines the address country.
+        countrySelect.value = nationality;
+        refreshNiceSelect(countrySelect);
+
+        // Set the phone calling code/country.
+        if (phoneInstance) {
+            phoneInstance.setCountry(config.iso2);
+        }
+
+        // Don't erase the phone value during initial restoration.
+        if (
+            !options.restoring &&
+            previousCountry !== nationality
+        ) {
+            phoneInput.value = "";
+            removeError(phoneInput);
+        }
+
+        // Reload address dependencies only when needed.
+        if (
+            options.force ||
+            previousCountry !== nationality
+        ) {
+            resetStateAndAddress();
+            loadStates(config.name);
+        }
+    }
+
+    // Nationality -> phone country and address country.
+    nationalitySelect.addEventListener("change", () => {
+        applyNationality(nationalitySelect.value, {
+            force: true
+        });
+
+        saveCompletedStep(0);
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+
+    // COUNTRY CHANGE
+    countrySelect.addEventListener("change", () => {
+        const config = countryConfig[countrySelect.value];
+
+        resetStateAndAddress();
+        removeError(countrySelect);
+
+        if (config) {
+            loadStates(config.name);
+        }
+
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+    // State -> city and postal code.
+    stateSelect.addEventListener("change", () => {
+        resetCityAndPostalCode();
+
+        cityInput.disabled = false;
+        cityInput.placeholder = "Enter your city";
+
+        removeError(stateSelect);
+        refreshNiceSelect(stateSelect);
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+    // City -> postal code.
+    cityInput.addEventListener("input", () => {
+        const hasCity = Boolean(cityInput.value.trim());
+
+        postalCodeInput.disabled = !hasCity;
+        postalCodeInput.placeholder = hasCity
+            ? "Enter postal code"
+            : "Enter city first";
+
+        if (!hasCity) {
+            postalCodeInput.value = "";
+            removeError(postalCodeInput);
+        }
+
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+    postalCodeInput.addEventListener("input", () => {
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+    // Restore the dependency chain after saved values load.
+    async function initializeLocationDependencies() {
+        const savedNationality = nationalitySelect.value;
+
+        if (savedNationality) {
+            // Country is derived from nationality, even when restoring.
+            countrySelect.value = savedNationality;
+            refreshNiceSelect(countrySelect);
+
+            if (phoneInstance) {
+                const savedCountryCode = countryConfig[savedNationality]?.iso2;
+
+                if (savedCountryCode && phoneInstance) {
+                    phoneInstance.setCountry(savedCountryCode);
+                }
+            }
+        }
+
+        const country = countryConfig[countrySelect.value];
+
+        if (!country) {
+            resetStateAndAddress();
+            return;
+        }
+
+
+        const savedForm = getSavedForm();
+        const savedAddress = savedForm.completedSteps?.[3] || {};
+        const savedState = savedAddress.state || "";
+        const savedCity = savedAddress.city || "";
+        const savedPostalCode = savedAddress["postal-code"] || "";
+
+
+        await loadStates(country.name, savedState);
+
+        // Restore city and postal code only if the state is valid.
+        if (
+            savedState &&
+            stateSelect.value === savedState
+        ) {
+            cityInput.value = savedCity;
+            cityInput.disabled = false;
+            cityInput.placeholder = "Enter your city";
+
+            postalCodeInput.value = savedPostalCode;
+            postalCodeInput.disabled = !savedCity.trim();
+            postalCodeInput.placeholder = savedCity.trim()
+                ? "Enter postal code"
+                : "Enter city first";
+        }
+
+        refreshNiceSelect(stateSelect);
+    }
+
+
     // CONDITIONAL FIELD HELPERS ----------
     function isFieldVisible(input) {
         const employmentOption = input.closest(".employment-status-option");
@@ -245,67 +650,71 @@ document.addEventListener("DOMContentLoaded", () => {
             const shouldShow = checkCondition(element);
 
             element.classList.toggle("active", shouldShow);
-            element.querySelectorAll("input, select, textarea")
-                .forEach((input) => {
-                    if (!shouldShow) {
-                        removeError(input);
-                        input.disabled = true;
-                    } else {
-                        input.disabled = false;
-                        input.removeAttribute("disabled");
-                    }
-                    if (input.tagName === "SELECT") {
-                        refreshNiceSelect(input);
-                    }
-                });
+            element.querySelectorAll("input, select, textarea").forEach((input) => {
+                if (!shouldShow) {
+                    removeError(input);
+                    input.disabled = true;
+                } else {
+                    input.disabled = false;
+                    input.removeAttribute("disabled");
+                }
+                if (input.tagName === "SELECT") {
+                    refreshNiceSelect(input);
+                }
+            });
         });
     }
 
     // EMPLOYMENT CONDITIONAL FIELDS ----------
-
     function clearInactiveEmploymentData(selectedValue) {
         if (!employmentStatus) return;
 
         const employmentStep = employmentStatus.closest(".form-step");
         const stepIndex = formSteps.indexOf(employmentStep);
+
+        if (stepIndex === -1) return;
+
         const savedForm = getSavedForm();
-        const savedStepData = savedForm.completedSteps[stepIndex + 1];
+        const stepNumber = stepIndex + 1;
+        const savedStepData = savedForm.completedSteps[stepNumber] || {};
 
         document.querySelectorAll(".employment-status-option").forEach((container) => {
             const isActive = container.dataset.employmentStatus === selectedValue;
 
-            // Keep the selected option's fields unchanged.
             if (isActive) return;
 
             container.querySelectorAll("input, select, textarea").forEach((input) => {
-
-                if (input.name && savedStepData) {
+                if (input.name) {
                     delete savedStepData[input.name];
                 }
+
                 if (input.type === "radio" || input.type === "checkbox") {
                     input.checked = false;
-                } else if (input.type === "file") {
+                }
+                else if (input.type === "file") {
                     input.value = "";
+
                     const display = input.closest("label")?.querySelector(".document-input-field");
                     if (display) {
                         display.textContent = display.dataset.defaultText || "Upload document";
                     }
-                } else {
+                }
+                else {
                     input.value = "";
                 }
+
                 removeError(input);
+
                 if (input.tagName === "SELECT") {
                     refreshNiceSelect(input);
                 }
             });
         });
 
-        // Save the cleaned data without removing other form steps.
-        if (savedStepData) {
-            saveFormData(savedForm);
-        }
+        savedForm.completedSteps[stepNumber] = savedStepData;
+        saveFormData(savedForm);
+        updateReview();
     }
-
 
     function updateEmploymentFields() {
         if (!employmentStatus) return;
@@ -435,19 +844,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            if (input.id === "phone") {
-                if (!/^[0-9]+$/.test(value)) {
-                    isValid = false;
-                    showError(
-                        input,
-                        "Please enter numbers only."
-                    );
 
-                } else if (value.length !== 10) {
+            if (input.id === "phone") {
+                let phoneIsValid = false;
+
+                if (phoneInstance) {
+                    try {
+                        phoneIsValid = phoneInstance.isValidNumber();
+                    } catch (error) {
+                        // Fallback while phone validation utilities load.
+                        phoneIsValid = /^\d{7,15}$/.test(
+                            input.value.replace(/\D/g, "")
+                        );
+                    }
+                } else {
+                    phoneIsValid = /^\d{7,15}$/.test(
+                        input.value.replace(/\D/g, "")
+                    );
+                }
+
+                if (!phoneIsValid) {
                     isValid = false;
                     showError(
                         input,
-                        "Phone number must contain exactly 10 digits."
+                        "Please enter a valid phone number for the selected country."
                     );
                 }
             }
@@ -638,10 +1058,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+
             const savedValue = savedData[input.name];
-            if (
-                savedValue === undefined
-            ) {
+
+            if (savedValue === undefined) {
+                const employmentOption = input.closest(".employment-status-option");
+
+                if (employmentOption) {
+                    if (input.type === "radio" || input.type === "checkbox") {
+                        input.checked = false;
+                    }
+                    else if (input.type === "file") {
+                        input.value = "";
+
+                        const display = input.closest("label")?.querySelector(".document-input-field");
+                        if (display) {
+                            display.textContent = display.dataset.defaultText || "Upload document";
+                        }
+                    }
+                    else {
+                        input.value = "";
+                    }
+
+                    removeError(input);
+                    if (input.tagName === "SELECT") {
+                        refreshNiceSelect(input);
+                    }
+                }
                 return;
             }
 
@@ -888,14 +1331,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-
         if (input.id === "employment-status") {
             removeError(input);
-            clearInactiveEmploymentData(input.value.trim());
+
+            const selectedValue = input.value.trim();
+            clearInactiveEmploymentData(selectedValue);
             updateEmploymentFields();
+            saveCompletedStep(currentStep);
             updateReview();
         }
-
     });
 
     // =========================================
@@ -1421,8 +1865,7 @@ document.addEventListener("DOMContentLoaded", () => {
     enableAllSelectOptions();
     restoreSavedData();
     updateEmploymentFields();
-
-
+    initializeLocationDependencies();
 
     function enableAllSelectOptions() {
         document.querySelectorAll("select").forEach((select) => {
@@ -1441,6 +1884,24 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshNiceSelect(select);
         });
     }
+
+    function saveLocationStepIfAlreadySaved() {
+        const savedForm = getSavedForm();
+
+        // Only update the address if the user has already
+        // unlocked and saved this step.
+        if (
+            !savedForm.completedSteps?.[3] &&
+            (savedForm.maxUnlockedStep || 0) < 3
+        ) {
+            return;
+        }
+
+        savedForm.completedSteps = savedForm.completedSteps || {};
+        savedForm.completedSteps[3] = collectStepData(2);
+        saveFormData(savedForm);
+    }
+
 });
 
 

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Multi-Step Form</title>
 
+    <!----- Phone Library ----->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/css/intlTelInput.css">
+
     <!----- Nice Select Css ----->
     <link rel="stylesheet" href="assets/css/nice-select.css">
 
@@ -98,13 +101,6 @@
                         </label>
                         <input class="input-field" type="email" name="email" id="email" placeholder="Enter your email address" required>
                     </div>
-                    <div class="input-stack">
-                        <label class="input-label" for="phone">
-                            Phone Number
-                            <span class="label-caption">*</span>
-                        </label>
-                        <input class="input-field" type="tel" name="phone" id="phone" placeholder="Enter your phone number" minlength="10" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9+() -]/g, '')" required>
-                    </div>
                     <div class=" input-stack">
                         <label class="input-label" for="date-of-birth">
                             Date of Birth
@@ -135,6 +131,13 @@
                             <option value="united-kingdom">United Kingdom</option>
                             <option value="united-states">United States</option>
                         </select>
+                    </div>
+                    <div class="input-stack">
+                        <label class="input-label" for="phone">
+                            Phone Number
+                            <span class="label-caption">*</span>
+                        </label>
+                        <input class="input-field" type="tel" name="phone" id="phone" placeholder="Enter your phone number" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9+() -]/g, '')" required>
                     </div>
                     <div class="column-span-2 input-stack">
                         <label class="input-label cursor-auto" for="gender">
@@ -680,7 +683,10 @@
     <!-----  Lottie Animation Js ----->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js" type="module"></script>
 
-    <!-- Nice Select js -->
+    <!----- Phone Library ----->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/intlTelInput.min.js"></script>
+
+    <!----- Nice Select js ----->
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/jquery.nice-select.js"></script>
 
