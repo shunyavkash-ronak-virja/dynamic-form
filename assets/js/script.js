@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // STORAGE ----------
     function getSavedForm() {
         try {
-            const savedData = localStorage.getItem(STORAGE_KEY);
+            const savedData = sessionStorage.getItem(STORAGE_KEY);
             if (!savedData) {
                 return {
                     completedSteps: {},
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveFormData(data) {
-        localStorage.setItem(
+        sessionStorage.setItem(
             STORAGE_KEY,
             JSON.stringify(data)
         );
@@ -70,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!savedStepData) return;
 
-        // Get the employment status saved in localStorage.
         const selectedValue = savedStepData[employmentStatus.name];
 
         if (!selectedValue) return;
@@ -286,18 +285,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    function getCountryConfig(value) {
+        if (!value) return null;
+
+        const normalizedValue = value.trim().toLowerCase();
+        return countryConfig[normalizedValue] || Object.values(countryConfig).find(country => country.name.toLowerCase() === normalizedValue) || null;
+    }
+
     // Initialise international phone input.
-    const phoneInstance = window.intlTelInput && phoneInput
-        ? window.intlTelInput(phoneInput, {
-            initialCountry: "in",
-            separateDialCode: true,
-            countrySelectorMode: "DROPDOWN",
-            loadUtils: () =>
-                import(
-                    "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
-                )
-        }) : null;
-    let stateRequestId = 0;
+    const phoneInstance = window.intlTelInput && phoneInput ? window.intlTelInput(phoneInput, {
+        initialCountry: "in",
+        separateDialCode: true,
+        countrySelectorMode: "DROPDOWN",
+        loadUtils: () =>
+            import(
+                "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
+            )
+    }) : null;
+    if (phoneInstance && phoneInput) {
+        phoneInput.addEventListener("countrychange", () => {
+            removeError(phoneInput);
+        });
+    }
 
     function setSelectOptions(select, placeholder, items) {
         if (!select) return;
@@ -314,44 +323,67 @@ document.addEventListener("DOMContentLoaded", () => {
 
         items.forEach((item) => {
             const option = document.createElement("option");
-            option.value = item.value;
-            option.textContent = item.label;
+
+            // Supports both strings and objects.
+            option.value =
+                typeof item === "string" ? item : item.value;
+
+            option.textContent =
+                typeof item === "string" ? item : item.label;
+
             select.appendChild(option);
         });
 
+        select.value = "";
+
+        // Update the visible Nice Select dropdown.
         refreshNiceSelect(select);
     }
 
     function resetCityAndPostalCode() {
-        cityInput.value = "";
-        cityInput.disabled = true;
-        cityInput.placeholder = "Select a state first";
+        if (cityInput) {
+            cityInput.value = "";
+            // If you want users to be able to type into them at all times, remove these two lines from
+            // cityInput.readOnly = true;
+            removeError(cityInput);
+        }
 
-        postalCodeInput.value = "";
-        postalCodeInput.disabled = true;
-        postalCodeInput.placeholder = "Enter city first";
-
-        removeError(cityInput);
-        removeError(postalCodeInput);
+        if (postalCodeInput) {
+            postalCodeInput.value = "";
+            // If you want users to be able to type into them at all times, remove these two lines from
+            // postalCodeInput.readOnly = true;
+            removeError(postalCodeInput);
+        }
     }
 
     function resetStateAndAddress() {
-        stateRequestId++;
+        if (stateSelect) {
+            stateSelect.replaceChildren();
 
-        setSelectOptions(
-            stateSelect,
-            "Select a country first",
-            []
-        );
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = "Select a country first";
+            placeholder.disabled = true;
+            placeholder.selected = true;
 
-        stateSelect.disabled = true;
+            stateSelect.appendChild(placeholder);
+            stateSelect.value = "";
+            stateSelect.disabled = true;
+
+            refreshNiceSelect(stateSelect);
+        }
+
         resetCityAndPostalCode();
-        removeError(stateSelect);
     }
+
+    let stateRequestId = 0;
 
     async function loadStates(countryName, savedState = "") {
         const requestId = ++stateRequestId;
 
+        if (!stateSelect) return;
+
+        // Reset old states immediately when the country changes.
         setSelectOptions(
             stateSelect,
             "Loading states...",
@@ -359,6 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         stateSelect.disabled = true;
+        refreshNiceSelect(stateSelect);
         resetCityAndPostalCode();
 
         if (!countryName) {
@@ -367,6 +400,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Select a country first",
                 []
             );
+            stateSelect.disabled = true;
+            refreshNiceSelect(stateSelect);
             return;
         }
 
@@ -390,50 +425,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const result = await response.json();
 
-            // Ignore outdated responses if the country changed again.
+            // Ignore an older response if the user changed country again.
             if (requestId !== stateRequestId) return;
 
-            const states = result.data?.states || [];
+            const states = result?.data?.states || [];
 
-            setSelectOptions(
-                stateSelect,
-                states.length
-                    ? "Select your state / province"
-                    : "No states available",
-                states.map((state) => ({
+            const stateOptions = states
+                .map((state) => ({
                     value: state.name,
                     label: state.name
                 }))
+                .filter((state) => state.value);
+
+            setSelectOptions(
+                stateSelect,
+                stateOptions.length
+                    ? "Select your state / province"
+                    : "No states available",
+                stateOptions
             );
 
-            stateSelect.disabled = states.length === 0;
+            stateSelect.disabled = stateOptions.length === 0;
+
+            // Restore the saved state only if it exists for this country.
+            if (
+                savedState &&
+                stateOptions.some(
+                    (state) =>
+                        state.value.toLowerCase() ===
+                        savedState.toLowerCase()
+                )
+            ) {
+                stateSelect.value = stateOptions.find(
+                    (state) =>
+                        state.value.toLowerCase() ===
+                        savedState.toLowerCase()
+                ).value;
+            }
+
             refreshNiceSelect(stateSelect);
 
-            if (savedState && states.some(
-                (state) => state.name === savedState
-            )) {
-                stateSelect.value = savedState;
-                refreshNiceSelect(stateSelect);
-
-                cityInput.disabled = false;
-                cityInput.placeholder = "Enter your city";
-
-                postalCodeInput.disabled = !cityInput.value.trim();
-                postalCodeInput.placeholder = cityInput.value.trim()
-                    ? "Enter postal code"
-                    : "Enter city first";
+            if (stateSelect.value) {
+                stateSelect.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                );
             }
         } catch (error) {
             if (requestId !== stateRequestId) return;
 
+            console.error("State loading failed:", error);
+
             setSelectOptions(
                 stateSelect,
-                "Unable to load states. Try again.",
+                "Unable to load states. Please try again.",
                 []
             );
 
             stateSelect.disabled = true;
-            console.error("State loading error:", error);
+            refreshNiceSelect(stateSelect);
         }
     }
 
@@ -482,11 +531,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function isPhoneCountryMatchingNationality() {
+        const nationality = nationalitySelect.value;
+        const expectedCountry = countryConfig[nationality];
+
+        if (!expectedCountry || !phoneInstance) {
+            return false;
+        }
+
+        const selectedPhoneCountry = phoneInstance.getSelectedCountryData();
+        return selectedPhoneCountry?.iso2 === expectedCountry.iso2;
+    }
+
     // Nationality -> phone country and address country.
-    nationalitySelect.addEventListener("change", () => {
+    nationalitySelect.addEventListener("change", async () => {
         applyNationality(nationalitySelect.value, {
             force: true
         });
+
+        const config = getCountryConfig(nationalitySelect.value);
+
+        if (config) {
+            await loadStates(config.name);
+        }
 
         saveCompletedStep(0);
         saveLocationStepIfAlreadySaved();
@@ -495,41 +562,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // COUNTRY CHANGE
-    countrySelect.addEventListener("change", () => {
-        const config = countryConfig[countrySelect.value];
 
-        resetStateAndAddress();
+    countrySelect.addEventListener("change", async () => {
+        const config = getCountryConfig(countrySelect.value);
+
         removeError(countrySelect);
 
+        // Keep Country consistent with Nationality (Step 1).
+        if (
+            nationalitySelect.value &&
+            config &&
+            countrySelect.value !== nationalitySelect.value
+        ) {
+            countrySelect.value = nationalitySelect.value;
+            refreshNiceSelect(countrySelect);
+
+            showError(
+                countrySelect,
+                "Country must match your nationality."
+            );
+
+            return;
+        }
+
+        resetStateAndAddress();
+
         if (config) {
-            loadStates(config.name);
+            await loadStates(config.name);
         }
 
         saveLocationStepIfAlreadySaved();
         updateReview();
     });
 
-    // State -> city and postal code.
     stateSelect.addEventListener("change", () => {
-        resetCityAndPostalCode();
-
-        cityInput.disabled = false;
-        cityInput.placeholder = "Enter your city";
-
         removeError(stateSelect);
-        refreshNiceSelect(stateSelect);
+
+        // A valid state selection unlocks the address inputs.
+        if (stateSelect.value) {
+            if (cityInput) {
+                cityInput.readOnly = false;
+            }
+
+            if (postalCodeInput) {
+                postalCodeInput.readOnly = !cityInput?.value.trim();
+            }
+        } else {
+            resetCityAndPostalCode();
+        }
+
         saveLocationStepIfAlreadySaved();
         updateReview();
     });
+
+    cityInput.addEventListener("input", () => {
+        removeError(cityInput);
+
+        if (postalCodeInput) {
+            postalCodeInput.readOnly =
+                !stateSelect.value || !cityInput.value.trim();
+
+            if (postalCodeInput.readOnly) {
+                postalCodeInput.value = "";
+            }
+        }
+
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+    postalCodeInput.addEventListener("input", () => {
+        removeError(postalCodeInput);
+        saveLocationStepIfAlreadySaved();
+        updateReview();
+    });
+
+
 
     // City -> postal code.
     cityInput.addEventListener("input", () => {
         const hasCity = Boolean(cityInput.value.trim());
 
         postalCodeInput.disabled = !hasCity;
-        postalCodeInput.placeholder = hasCity
-            ? "Enter postal code"
-            : "Enter city first";
 
         if (!hasCity) {
             postalCodeInput.value = "";
@@ -545,57 +659,55 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-    // Restore the dependency chain after saved values load.
+    // RESTORE ADDRESS DEPENDENCIES
     async function initializeLocationDependencies() {
-        const savedNationality = nationalitySelect.value;
+        const savedForm = getSavedForm();
+        const savedAddress =
+            savedForm.completedSteps?.[3] || {};
 
-        if (savedNationality) {
-            // Country is derived from nationality, even when restoring.
+        const savedNationality =
+            nationalitySelect?.value || "";
+
+        const savedCountry =
+            savedAddress.country || savedNationality;
+
+        if (savedNationality && savedCountry !== savedNationality) {
             countrySelect.value = savedNationality;
             refreshNiceSelect(countrySelect);
-
-            if (phoneInstance) {
-                const savedCountryCode = countryConfig[savedNationality]?.iso2;
-
-                if (savedCountryCode && phoneInstance) {
-                    phoneInstance.setCountry(savedCountryCode);
-                }
-            }
+        } else if (savedCountry) {
+            countrySelect.value = savedCountry;
+            refreshNiceSelect(countrySelect);
         }
 
-        const country = countryConfig[countrySelect.value];
+        resetStateAndAddress();
 
-        if (!country) {
-            resetStateAndAddress();
+        const config = getCountryConfig(countrySelect.value);
+
+        if (!config) {
             return;
         }
 
+        await loadStates(
+            config.name,
+            savedAddress.state || ""
+        );
 
-        const savedForm = getSavedForm();
-        const savedAddress = savedForm.completedSteps?.[3] || {};
-        const savedState = savedAddress.state || "";
-        const savedCity = savedAddress.city || "";
-        const savedPostalCode = savedAddress["postal-code"] || "";
+        // Restore City and Postal Code only after the state is restored.
+        if (stateSelect.value) {
+            if (cityInput) {
+                cityInput.value = savedAddress.city || "";
+                cityInput.readOnly = false;
+            }
 
-
-        await loadStates(country.name, savedState);
-
-        // Restore city and postal code only if the state is valid.
-        if (
-            savedState &&
-            stateSelect.value === savedState
-        ) {
-            cityInput.value = savedCity;
-            cityInput.disabled = false;
-            cityInput.placeholder = "Enter your city";
-
-            postalCodeInput.value = savedPostalCode;
-            postalCodeInput.disabled = !savedCity.trim();
-            postalCodeInput.placeholder = savedCity.trim()
-                ? "Enter postal code"
-                : "Enter city first";
+            if (postalCodeInput) {
+                postalCodeInput.value =
+                    savedAddress["postal-code"] || "";
+                postalCodeInput.readOnly =
+                    !cityInput?.value.trim();
+            }
         }
 
+        refreshNiceSelect(countrySelect);
         refreshNiceSelect(stateSelect);
     }
 
@@ -846,18 +958,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (input.id === "phone") {
+                const countryMatches = isPhoneCountryMatchingNationality();
+
+                if (!countryMatches) {
+                    isValid = false;
+                    showError(
+                        input,
+                        "Your phone country must match your nationality."
+                    );
+                    return;
+                }
+
                 let phoneIsValid = false;
 
-                if (phoneInstance) {
-                    try {
-                        phoneIsValid = phoneInstance.isValidNumber();
-                    } catch (error) {
-                        // Fallback while phone validation utilities load.
-                        phoneIsValid = /^\d{7,15}$/.test(
-                            input.value.replace(/\D/g, "")
-                        );
-                    }
-                } else {
+                try {
+                    phoneIsValid = phoneInstance ? phoneInstance.isValidNumber() : /^\d{7,15}$/.test(input.value.replace(/\D/g, ""));
+                } catch (error) {
                     phoneIsValid = /^\d{7,15}$/.test(
                         input.value.replace(/\D/g, "")
                     );
@@ -1206,6 +1322,9 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.classList.remove(
                 "active"
             );
+        }
+        if (stepIndex === 2) {
+            initializeLocationDependencies();
         }
     }
 
@@ -1791,7 +1910,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         // Clear saved application.
-        localStorage.removeItem(
+        sessionStorage.removeItem(
             STORAGE_KEY
         );
 
@@ -1811,7 +1930,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startNewApplicationBtn.addEventListener("click", () => {
 
             // Remove saved application
-            localStorage.removeItem(
+            sessionStorage.removeItem(
                 STORAGE_KEY
             );
 
@@ -1862,10 +1981,9 @@ document.addEventListener("DOMContentLoaded", () => {
             element.dataset.defaultText = element.textContent.trim();
         });
 
-    enableAllSelectOptions();
-    restoreSavedData();
+
     updateEmploymentFields();
-    initializeLocationDependencies();
+    restoreSavedData();
 
     function enableAllSelectOptions() {
         document.querySelectorAll("select").forEach((select) => {
