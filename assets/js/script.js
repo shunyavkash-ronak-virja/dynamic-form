@@ -504,16 +504,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const previousCountry = countrySelect.value;
 
-        // Nationality determines the address country.
         countrySelect.value = nationality;
         refreshNiceSelect(countrySelect);
+        countrySelect.disabled = true;
+        refreshNiceSelect(countrySelect);
 
-        // Set the phone calling code/country.
         if (phoneInstance) {
             phoneInstance.setCountry(config.iso2);
         }
 
-        // Don't erase the phone value during initial restoration.
         if (
             !options.restoring &&
             previousCountry !== nationality

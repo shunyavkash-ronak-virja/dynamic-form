@@ -279,6 +279,10 @@ input::-webkit-inner-spin-button {
   border-color: var(--orange);
 }
 
+.iti__country-container:is(:focus, :focus-visible) {
+  outline: none;
+}
+
 select[required].nice-select-search ~ .nice-select,
 select[required] {
   display: block !important;
