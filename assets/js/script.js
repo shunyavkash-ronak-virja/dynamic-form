@@ -561,9 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-
     // COUNTRY CHANGE
-
     countrySelect.addEventListener("change", async () => {
         const config = getCountryConfig(countrySelect.value);
 
@@ -616,16 +614,65 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
+    // cityInput.addEventListener("input", () => {
+    //     removeError(cityInput);
+
+    //     if (postalCodeInput) {
+    //         postalCodeInput.readOnly =
+    //             !stateSelect.value || !cityInput.value.trim();
+
+    //         if (postalCodeInput.readOnly) {
+    //             postalCodeInput.value = "";
+    //         }
+    //     }
+
+    //     saveLocationStepIfAlreadySaved();
+    //     updateReview();
+    // });
+
+    // postalCodeInput.addEventListener("input", () => {
+    //     removeError(postalCodeInput);
+    //     saveLocationStepIfAlreadySaved();
+    //     updateReview();
+    // });
+
+
+
+    // City -> postal code.
+    // cityInput.addEventListener("input", () => {
+    //     const hasCity = Boolean(cityInput.value.trim());
+
+    //     postalCodeInput.disabled = !hasCity;
+
+    //     if (!hasCity) {
+    //         postalCodeInput.value = "";
+    //         removeError(postalCodeInput);
+    //     }
+
+    //     saveLocationStepIfAlreadySaved();
+    //     updateReview();
+    // });
+
+    // postalCodeInput.addEventListener("input", () => {
+    //     saveLocationStepIfAlreadySaved();
+    //     updateReview();
+    // });
+
+
     cityInput.addEventListener("input", () => {
         removeError(cityInput);
 
-        if (postalCodeInput) {
-            postalCodeInput.readOnly =
-                !stateSelect.value || !cityInput.value.trim();
+        const hasState = Boolean(stateSelect.value);
+        const hasCity = Boolean(cityInput.value.trim());
 
-            if (postalCodeInput.readOnly) {
-                postalCodeInput.value = "";
-            }
+        cityInput.readOnly = !hasState;
+
+        postalCodeInput.disabled = !(hasState && hasCity);
+        postalCodeInput.readOnly = !(hasState && hasCity);
+
+        if (!hasCity || !hasState) {
+            postalCodeInput.value = "";
+            removeError(postalCodeInput);
         }
 
         saveLocationStepIfAlreadySaved();
@@ -638,30 +685,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-
-
-    // City -> postal code.
-    cityInput.addEventListener("input", () => {
-        const hasCity = Boolean(cityInput.value.trim());
-
-        postalCodeInput.disabled = !hasCity;
-
-        if (!hasCity) {
-            postalCodeInput.value = "";
-            removeError(postalCodeInput);
-        }
-
-        saveLocationStepIfAlreadySaved();
-        updateReview();
-    });
-
-    postalCodeInput.addEventListener("input", () => {
-        saveLocationStepIfAlreadySaved();
-        updateReview();
-    });
-
     // RESTORE ADDRESS DEPENDENCIES
-
     async function initializeLocationDependencies() {
         if (isRestoringLocation) return;
 
@@ -2053,13 +2077,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation) return;
+
         const savedForm = getSavedForm();
         savedForm.completedSteps = savedForm.completedSteps || {};
-        const previousAddress = savedForm.completedSteps[3] || {};
+        const previousAddress = savedForm.completedSteps[3];
+
+        if (!previousAddress && currentStep !== 2) {
+            return;
+        }
+
         const addressData = {
-            ...previousAddress,
+            ...(previousAddress || {}),
             country: countrySelect ? countrySelect.value : "",
             state: stateSelect ? stateSelect.value : "",
             city: cityInput ? cityInput.value : "",
@@ -2069,7 +2100,6 @@ document.addEventListener("DOMContentLoaded", () => {
         savedForm.completedSteps[3] = addressData;
         saveFormData(savedForm);
     }
-
 });
 
 document.addEventListener("input", function (event) {
