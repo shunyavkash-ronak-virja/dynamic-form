@@ -378,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let stateRequestId = 0;
+    let isRestoringLocation = false;
 
     async function loadStates(countryName, savedState = "") {
         const requestId = ++stateRequestId;
@@ -660,57 +661,71 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // RESTORE ADDRESS DEPENDENCIES
+
     async function initializeLocationDependencies() {
-        const savedForm = getSavedForm();
-        const savedAddress =
-            savedForm.completedSteps?.[3] || {};
+        if (isRestoringLocation) return;
 
-        const savedNationality =
-            nationalitySelect?.value || "";
+        isRestoringLocation = true;
 
-        const savedCountry =
-            savedAddress.country || savedNationality;
+        try {
+            const savedForm = getSavedForm();
+            const savedAddress =
+                savedForm.completedSteps?.[3] || {};
 
-        if (savedNationality && savedCountry !== savedNationality) {
-            countrySelect.value = savedNationality;
-            refreshNiceSelect(countrySelect);
-        } else if (savedCountry) {
-            countrySelect.value = savedCountry;
-            refreshNiceSelect(countrySelect);
-        }
+            const savedNationality =
+                nationalitySelect?.value || "";
 
-        resetStateAndAddress();
+            // Step 1 is authoritative for the address country.
+            const savedCountry =
+                savedNationality || savedAddress.country || "";
 
-        const config = getCountryConfig(countrySelect.value);
-
-        if (!config) {
-            return;
-        }
-
-        await loadStates(
-            config.name,
-            savedAddress.state || ""
-        );
-
-        // Restore City and Postal Code only after the state is restored.
-        if (stateSelect.value) {
-            if (cityInput) {
-                cityInput.value = savedAddress.city || "";
-                cityInput.readOnly = false;
+            if (countrySelect) {
+                countrySelect.value = savedCountry;
+                refreshNiceSelect(countrySelect);
             }
 
-            if (postalCodeInput) {
-                postalCodeInput.value =
-                    savedAddress["postal-code"] || "";
-                postalCodeInput.readOnly =
-                    !cityInput?.value.trim();
-            }
-        }
+            resetStateAndAddress();
 
-        refreshNiceSelect(countrySelect);
-        refreshNiceSelect(stateSelect);
+            const config = getCountryConfig(savedCountry);
+
+            if (!config) {
+                return;
+            }
+
+            // Load the state options before restoring dependent fields.
+            await loadStates(
+                config.name,
+                savedAddress.state || ""
+            );
+
+            if (stateSelect?.value) {
+                if (cityInput) {
+                    cityInput.value = savedAddress.city || "";
+                    cityInput.readOnly = false;
+                }
+
+                if (postalCodeInput) {
+                    postalCodeInput.value =
+                        savedAddress["postal-code"] || "";
+
+                    postalCodeInput.readOnly =
+                        !cityInput?.value.trim();
+
+                    // Keep the existing City -> Postal Code rule.
+                    postalCodeInput.disabled =
+                        !cityInput?.value.trim();
+                }
+            }
+
+            refreshNiceSelect(countrySelect);
+            refreshNiceSelect(stateSelect);
+        } finally {
+            isRestoringLocation = false;
+
+            // Save the fully restored values, not the temporary blanks.
+            saveLocationStepIfAlreadySaved();
+        }
     }
-
 
     // CONDITIONAL FIELD HELPERS ----------
     function isFieldVisible(input) {
@@ -1059,6 +1074,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
         }
+
+        // ADDRESS COUNTRY MUST MATCH STEP 1 NATIONALITY
+        if (currentStep === 2 && nationalitySelect && countrySelect) {
+            const nationalityConfig = getCountryConfig(nationalitySelect.value);
+            const addressCountryConfig = getCountryConfig(countrySelect.value);
+            const countriesMatch = nationalityConfig && addressCountryConfig && nationalityConfig.iso2 === addressCountryConfig.iso2;
+
+            if (!countriesMatch) {
+                isValid = false;
+
+                showError(
+                    countrySelect,
+                    "Country must match your nationality."
+                );
+            } else {
+                removeError(countrySelect);
+            }
+        }
+
         return isValid;
     }
 
@@ -1107,6 +1141,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const newData = collectStepData(stepIndex);
         const oldData = savedForm.completedSteps[stepIndex + 1] || {};
         const step = formSteps[stepIndex];
+
+        if (stepIndex === 2) {
+            if (countrySelect) {
+                newData.country = countrySelect.value;
+            }
+
+            if (stateSelect) {
+                newData.state = stateSelect.value;
+            }
+
+            if (cityInput) {
+                newData.city = cityInput.value;
+            }
+
+            if (postalCodeInput) {
+                newData["postal-code"] = postalCodeInput.value;
+            }
+        }
 
         step.querySelectorAll('input[type="file"]').forEach((input) => {
             if (
@@ -2000,25 +2052,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
     function saveLocationStepIfAlreadySaved() {
+        if (isRestoringLocation) return;
         const savedForm = getSavedForm();
-
-        // Only update the address if the user has already
-        // unlocked and saved this step.
-        if (
-            !savedForm.completedSteps?.[3] &&
-            (savedForm.maxUnlockedStep || 0) < 3
-        ) {
-            return;
-        }
-
         savedForm.completedSteps = savedForm.completedSteps || {};
-        savedForm.completedSteps[3] = collectStepData(2);
+        const previousAddress = savedForm.completedSteps[3] || {};
+        const addressData = {
+            ...previousAddress,
+            country: countrySelect ? countrySelect.value : "",
+            state: stateSelect ? stateSelect.value : "",
+            city: cityInput ? cityInput.value : "",
+            "postal-code": postalCodeInput ? postalCodeInput.value : ""
+        };
+
+        savedForm.completedSteps[3] = addressData;
         saveFormData(savedForm);
     }
 
 });
-
 
 document.addEventListener("input", function (event) {
     const input = event.target;
