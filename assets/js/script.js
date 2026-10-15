@@ -297,11 +297,11 @@ document.addEventListener("DOMContentLoaded", () => {
         initialCountry: "in",
         separateDialCode: true,
         countrySelectorMode: "DROPDOWN",
-        loadUtils: () =>
-            import(
-                "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
-            )
+        loadUtils: () => import(
+            "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
+        )
     }) : null;
+
     if (phoneInstance && phoneInput) {
         phoneInput.addEventListener("countrychange", () => {
             removeError(phoneInput);

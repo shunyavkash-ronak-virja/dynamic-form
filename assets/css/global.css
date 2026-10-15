@@ -446,28 +446,36 @@ select[required] {
 } */
 
 /* Phone number field wrapper  */
-.input-field[type="tel"] {
-  overflow: hidden;
-}
-
-.iti__dropdown-content {
+.iti {
+  display: block;
   width: 100%;
-  background-color: var(--white);
-  border-radius: 8px;
-  transition: all 0.3s ease-in-out;
+  min-width: 0;
 }
 
 .iti--inline-dropdown .iti__dropdown-content {
-  margin-top: 4px;
-  box-shadow: 0 0 0 1px rgb(68 68 68 / 0.11);
-  border: none;
-  margin-left: 0;
   top: 100%;
   left: 0;
+  right: 0;
+  margin-top: 4px;
+  margin-left: 0;
+  border: none;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgb(68 68 68 / 0.11);
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition: all 0.3s ease-in-out;
+}
+
+.iti__dropdown-content.iti__hide {
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0);
 }
 
 .iti__search-input-wrapper {
-  padding-block: 2px;
   border-bottom: 1px solid var(--grey-100);
 }
 
@@ -479,34 +487,36 @@ select[required] {
   outline: none;
 }
 
-.iti {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-}
-
-.iti input[type="tel"] {
+.iti input[type="tel"],
+.iti input.iti_tel-input {
+  display: block;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  height: auto;
+  padding-block: 10px;
+  padding-right: 10px;
 }
 
-.iti__country-container {
-  flex-shrink: 0;
-}
-
-.iti__selected-country {
-  height: 100%;
-  gap: 4px;
+.iti input[type="tel"] {
+  overflow: hidden !important;
 }
 
 .iti input[type="tel"]:focus {
   outline-offset: 0;
 }
 
-.iti .iti__selected-dial-code {
-  margin-left: 0;
+.iti_country-container {
+  flex-shrink: 0;
+}
+
+.iti_selected-country {
+  height: 100%;
+  gap: 4px;
+}
+
+.iti--inline-dropdown .iti__country-list {
+  max-height: 160px;
 }
 
 .iti__country-list::-webkit-scrollbar {
@@ -518,4 +528,42 @@ select[required] {
   background-color: var(--black-12);
   border-radius: 24px;
   background-clip: padding-box;
+}
+
+.iti__country .iti__flag {
+  opacity: 0.4;
+  transition: all 0.3s ease-in-out;
+}
+
+.iti__country.iti__highlight .iti__flag {
+  opacity: 1;
+}
+
+.iti__country,
+.iti__dial-code {
+  color: var(--grey);
+  transition: all 0.3s ease-in-out;
+}
+
+.iti__country.iti__highlight {
+  color: var(--black);
+  background-color: var(--transparent);
+}
+
+.iti__country.iti__highlight .iti__dial-code {
+  color: var(--iti-dialcode-color);
+}
+
+.iti__selected-country-primary {
+  transition: all 0.3s ease-in-out;
+}
+
+.iti--allow-dropdown
+  .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly]))
+  .iti__selected-country-primary:hover,
+.iti--allow-dropdown
+  .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly]))
+  .iti__selected-country:has(+ .iti__dropdown-content:hover)
+  .iti__selected-country-primary {
+  background-color: var(--black-12);
 }
