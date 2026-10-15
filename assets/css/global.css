@@ -496,6 +496,9 @@ select[required] {
   height: auto;
   padding-block: 10px;
   padding-right: 10px;
+  transition:
+    border-color 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
 }
 
 .iti input[type="tel"] {
@@ -554,7 +557,8 @@ select[required] {
   color: var(--iti-dialcode-color);
 }
 
-.iti__selected-country-primary {
+.iti__selected-country-primary,
+.iti__selected-country-primary .iti__arrow {
   transition: all 0.3s ease-in-out;
 }
 
@@ -566,4 +570,18 @@ select[required] {
   .iti__selected-country:has(+ .iti__dropdown-content:hover)
   .iti__selected-country-primary {
   background-color: var(--transparent);
+}
+
+.iti__arrow {
+  display: block;
+  border: none;
+  height: 4px;
+  width: 6px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 5" fill="none"><path d="M0.5 0.5L3.5 4.5L6.5 0.5" stroke="black" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  transform: rotate(0);
+}
+
+.iti__arrow--up {
+  transform: rotate(180deg);
 }

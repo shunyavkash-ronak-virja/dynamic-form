@@ -297,6 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialCountry: "in",
         separateDialCode: true,
         countrySelectorMode: "DROPDOWN",
+        autoPlaceholder: "off",
         loadUtils: () => import(
             "https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.5/build/js/utils.js"
         )
@@ -1925,32 +1926,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     // START NEW APPLICATION
     // =========================================
-
     if (startNewApplicationBtn) {
         startNewApplicationBtn.addEventListener("click", () => {
 
-            // Remove saved application
-            sessionStorage.removeItem(
-                STORAGE_KEY
-            );
+            sessionStorage.removeItem(STORAGE_KEY);
 
-            // Reset state
             currentStep = 0;
             maxUnlockedStep = 0;
 
-
-            // Clear all steps
             formSteps.forEach((_, index) => {
                 clearStep(index);
             });
 
-            // Clear errors
+            if (phoneInstance) {
+                phoneInstance.setCountry("in");
+            }
+
+            if (phoneInput) {
+                phoneInput.value = "";
+                removeError(phoneInput);
+            }
+
             formSteps.forEach((step) => {
                 removeStepErrors(step);
             });
 
-
-            // Clear document display names
             document.querySelectorAll(".document-input-field")
                 .forEach((element) => {
                     const defaultText = element.dataset.defaultText;
@@ -1959,10 +1959,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
 
-            // Hide confirmation
             confirmationMessage.classList.remove("active");
 
-            // Show form/progress
             document.querySelector(".future-step-wrapper").style.display = "";
             form.style.display = "";
 
