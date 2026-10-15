@@ -565,5 +565,5 @@ select[required] {
   .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly]))
   .iti__selected-country:has(+ .iti__dropdown-content:hover)
   .iti__selected-country-primary {
-  background-color: var(--black-12);
+  background-color: var(--transparent);
 }
