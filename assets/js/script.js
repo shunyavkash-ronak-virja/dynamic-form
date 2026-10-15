@@ -1313,31 +1313,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function restoreSavedData() {
-
         cleanSavedEmploymentData();
-        const savedForm = getSavedForm();
-        maxUnlockedStep = savedForm.maxUnlockedStep || 0;
-        if (
-            maxUnlockedStep >= formSteps.length
-        ) {
-            maxUnlockedStep = formSteps.length - 1;
-        }
 
-        for (
-            let index = 0;
-            index < maxUnlockedStep;
-            index++
-        ) {
+        const savedForm = getSavedForm();
+
+        maxUnlockedStep = Number(savedForm.maxUnlockedStep) || 0;
+        maxUnlockedStep = Math.max(
+            0,
+            Math.min(maxUnlockedStep, formSteps.length - 1)
+        );
+
+        // Restore saved values for previously reached steps.
+        for (let index = 0; index < maxUnlockedStep; index++) {
             restoreStep(index);
         }
 
+
+        // Restore the phone calling-code country from the saved nationality.
+        const savedNationality = nationalitySelect?.value;
+        const nationalityConfig = getCountryConfig(savedNationality);
+
+        if (phoneInstance && nationalityConfig) {
+            phoneInstance.setCountry(nationalityConfig.iso2);
+        }
+
+        // Restore the exact step that was active before refresh.
         if (
-            maxUnlockedStep >= formSteps.length - 1
+            Number.isInteger(savedForm.currentStep) &&
+            savedForm.currentStep >= 0 &&
+            savedForm.currentStep < formSteps.length &&
+            savedForm.currentStep <= maxUnlockedStep
         ) {
-            currentStep = formSteps.length - 1;
+            currentStep = savedForm.currentStep;
         } else {
+            // Fallback for data saved before currentStep was added.
             currentStep = maxUnlockedStep;
         }
+
         updateEmploymentFields();
         showStep(currentStep);
         updateReview();
@@ -1348,30 +1360,32 @@ document.addEventListener("DOMContentLoaded", () => {
             step.classList.toggle("active", index === stepIndex);
         });
 
-        futureSteps.forEach(
-            (step, index) => {
-                step.classList.remove(
-                    "active",
-                    "complete"
+        const savedForm = getSavedForm();
+        savedForm.currentStep = stepIndex;
+        savedForm.maxUnlockedStep = maxUnlockedStep;
+        saveFormData(savedForm);
+
+        futureSteps.forEach((step, index) => {
+            step.classList.remove(
+                "active", "complete"
+            );
+
+            if (
+                index < maxUnlockedStep
+            ) {
+                step.classList.add(
+                    "active", "complete"
                 );
-
-                if (
-                    index < maxUnlockedStep
-                ) {
-                    step.classList.add(
-                        "active",
-                        "complete"
-                    );
-                }
-
-                if (
-                    index === stepIndex
-                ) {
-                    step.classList.add(
-                        "active"
-                    );
-                }
             }
+
+            if (
+                index === stepIndex
+            ) {
+                step.classList.add(
+                    "active"
+                );
+            }
+        }
         );
 
         if (stepIndex === 0) {
@@ -2057,6 +2071,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateEmploymentFields();
     restoreSavedData();
+
+    document.body.classList.add("multi-step-ready");
 
     function enableAllSelectOptions() {
         document.querySelectorAll("select").forEach((select) => {
