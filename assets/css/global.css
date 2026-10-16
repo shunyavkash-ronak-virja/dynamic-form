@@ -277,10 +277,6 @@ input::-webkit-inner-spin-button {
   border-color: var(--orange);
 }
 
-.iti__country-container:is(:focus, :focus-visible) {
-  outline: none;
-}
-
 select[required].nice-select-search ~ .nice-select,
 select[required] {
   display: block !important;
@@ -432,21 +428,6 @@ select[required] {
   display: none;
 }
 
-/* .input-field[type="date"],
-.input-field[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  color: var(--grey);
-} 
-
-.input-field[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.5);
-}
-
-.input-field[type="date"].is-filled,
-.input-field[type="date"]::-webkit-calendar-picker-indicator.is-filled {
-  color: #000000;
-} */
-
 /* Phone number field wrapper  */
 .iti {
   display: block;
@@ -485,7 +466,9 @@ select[required] {
   padding-block: 8px;
 }
 
-.iti__search-input:focus {
+.iti__search-input:focus,
+.iti__selected-country:is(:focus, :focus-visible),
+.iti__country-container:is(:focus, :focus-visible) {
   outline: none;
 }
 
