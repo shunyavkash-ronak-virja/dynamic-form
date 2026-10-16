@@ -5,15 +5,9 @@ $(document).ready(function () {
     $("select").niceSelect();
 });
 
-// const dateInput = document.querySelector('.input-field[type="date"]');
-// dateInput.addEventListener('change', function () {
-//     if (this.value) {
-//         this.classList.add("is-filled");
-//     } else {
-//         this.classList.remove("is-filled");
-//     }
-// });
-
+// ================================
+// MULTI STEP FORM
+// ================================
 document.addEventListener("DOMContentLoaded", () => {
 
     const form = document.querySelector(".form-step-wrapper");
@@ -29,8 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentStep = 0;
     let maxUnlockedStep = 0;
 
-
-    // STORAGE ----------
     function getSavedForm() {
         try {
             const savedData = sessionStorage.getItem(STORAGE_KEY);
@@ -74,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!selectedValue) return;
 
-        // Remove data belonging to every unselected employment option.
         document.querySelectorAll(".employment-status-option").forEach((container) => {
             if (container.dataset.employmentStatus === selectedValue) {
                 return;
@@ -90,8 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
         saveFormData(savedForm);
     }
 
-
-    // ERROR HANDLING ----------
     function getErrorElement(input) {
         if (input.tagName === "SELECT") {
             const niceSelect = input.nextElementSibling;
@@ -166,8 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
-
     function refreshNiceSelect(select) {
         if (!select) return;
 
@@ -175,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
             window.jQuery(select).niceSelect("update");
 
             const niceSelect = select.nextElementSibling;
-
             if (!niceSelect?.classList.contains("nice-select")) {
                 return;
             }
@@ -194,19 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // =========================================
-    // NATIONALITY, PHONE AND ADDRESS DEPENDENCIES
-    // Add inside the existing DOMContentLoaded
-    // callback, after refreshNiceSelect().
-    // =========================================
-
     const nationalitySelect = document.getElementById("nationality");
     const countrySelect = document.getElementById("country");
     const stateSelect = document.getElementById("state");
     const cityInput = document.getElementById("city");
     const postalCodeInput = document.getElementById("postal-code");
     const phoneInput = document.getElementById("phone");
-
     const countryConfig = {
         australia: {
             name: "Australia",
@@ -292,7 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return countryConfig[normalizedValue] || Object.values(countryConfig).find(country => country.name.toLowerCase() === normalizedValue) || null;
     }
 
-    // Initialise international phone input.
     const phoneInstance = window.intlTelInput && phoneInput ? window.intlTelInput(phoneInput, {
         initialCountry: "in",
         separateDialCode: true,
@@ -319,40 +297,27 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholderOption.textContent = placeholder;
         placeholderOption.disabled = true;
         placeholderOption.selected = true;
-
         select.appendChild(placeholderOption);
 
         items.forEach((item) => {
             const option = document.createElement("option");
-
-            // Supports both strings and objects.
-            option.value =
-                typeof item === "string" ? item : item.value;
-
-            option.textContent =
-                typeof item === "string" ? item : item.label;
-
+            option.value = typeof item === "string" ? item : item.value;
+            option.textContent = typeof item === "string" ? item : item.label;
             select.appendChild(option);
         });
 
         select.value = "";
-
-        // Update the visible Nice Select dropdown.
         refreshNiceSelect(select);
     }
 
     function resetCityAndPostalCode() {
         if (cityInput) {
             cityInput.value = "";
-            // If you want users to be able to type into them at all times, remove these two lines from
-            // cityInput.readOnly = true;
             removeError(cityInput);
         }
 
         if (postalCodeInput) {
             postalCodeInput.value = "";
-            // If you want users to be able to type into them at all times, remove these two lines from
-            // postalCodeInput.readOnly = true;
             removeError(postalCodeInput);
         }
     }
@@ -360,13 +325,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function resetStateAndAddress() {
         if (stateSelect) {
             stateSelect.replaceChildren();
-
             const placeholder = document.createElement("option");
             placeholder.value = "";
             placeholder.textContent = "Select a country first";
             placeholder.disabled = true;
             placeholder.selected = true;
-
             stateSelect.appendChild(placeholder);
             stateSelect.value = "";
             stateSelect.disabled = true;
@@ -385,104 +348,61 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!stateSelect) return;
 
-        // Reset old states immediately when the country changes.
-        setSelectOptions(
-            stateSelect,
-            "Loading states...",
-            []
-        );
-
+        setSelectOptions(stateSelect, "Loading states...", []);
         stateSelect.disabled = true;
         refreshNiceSelect(stateSelect);
         resetCityAndPostalCode();
 
         if (!countryName) {
-            setSelectOptions(
-                stateSelect,
-                "Select a country first",
-                []
-            );
+            setSelectOptions(stateSelect, "Select a country first", []);
             stateSelect.disabled = true;
             refreshNiceSelect(stateSelect);
             return;
         }
 
         try {
-            const response = await fetch(
-                "https://countriesnow.space/api/v0.1/countries/states",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        country: countryName
-                    })
-                }
-            );
-
+            const response = await fetch("https://countriesnow.space/api/v0.1/countries/states", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    country: countryName
+                })
+            });
             if (!response.ok) {
                 throw new Error("Unable to load states.");
             }
 
             const result = await response.json();
-
-            // Ignore an older response if the user changed country again.
             if (requestId !== stateRequestId) return;
 
             const states = result?.data?.states || [];
+            const stateOptions = states.map((state) => ({
+                value: state.name,
+                label: state.name
+            })).filter((state) => state.value);
 
-            const stateOptions = states
-                .map((state) => ({
-                    value: state.name,
-                    label: state.name
-                }))
-                .filter((state) => state.value);
-
-            setSelectOptions(
-                stateSelect,
-                stateOptions.length
-                    ? "Select your state / province"
-                    : "No states available",
-                stateOptions
-            );
-
+            setSelectOptions(stateSelect, stateOptions.length ? "Select your state / province" : "No states available", stateOptions);
             stateSelect.disabled = stateOptions.length === 0;
 
-            // Restore the saved state only if it exists for this country.
             if (
-                savedState &&
-                stateOptions.some(
-                    (state) =>
-                        state.value.toLowerCase() ===
-                        savedState.toLowerCase()
-                )
+                savedState && stateOptions.some((state) => state.value.toLowerCase() === savedState.toLowerCase())
             ) {
-                stateSelect.value = stateOptions.find(
-                    (state) =>
-                        state.value.toLowerCase() ===
-                        savedState.toLowerCase()
-                ).value;
+                stateSelect.value = stateOptions.find((state) => state.value.toLowerCase() === savedState.toLowerCase()).value;
             }
 
             refreshNiceSelect(stateSelect);
 
             if (stateSelect.value) {
-                stateSelect.dispatchEvent(
-                    new Event("change", { bubbles: true })
-                );
+                stateSelect.dispatchEvent(new Event("change", { bubbles: true }));
             }
         } catch (error) {
             if (requestId !== stateRequestId) return;
 
             console.error("State loading failed:", error);
 
-            setSelectOptions(
-                stateSelect,
-                "Unable to load states. Please try again.",
-                []
-            );
-
+            setSelectOptions(stateSelect, "Unable to load states. Please try again.", []);
             stateSelect.disabled = true;
             refreshNiceSelect(stateSelect);
         }
@@ -515,17 +435,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (
-            !options.restoring &&
-            previousCountry !== nationality
+            !options.restoring && previousCountry !== nationality
         ) {
             phoneInput.value = "";
             removeError(phoneInput);
         }
 
-        // Reload address dependencies only when needed.
         if (
-            options.force ||
-            previousCountry !== nationality
+            options.force || previousCountry !== nationality
         ) {
             resetStateAndAddress();
             loadStates(config.name);
@@ -544,14 +461,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return selectedPhoneCountry?.iso2 === expectedCountry.iso2;
     }
 
-    // Nationality -> phone country and address country.
     nationalitySelect.addEventListener("change", async () => {
         applyNationality(nationalitySelect.value, {
             force: true
         });
 
         const config = getCountryConfig(nationalitySelect.value);
-
         if (config) {
             await loadStates(config.name);
         }
@@ -561,26 +476,17 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-    // COUNTRY CHANGE
     countrySelect.addEventListener("change", async () => {
         const config = getCountryConfig(countrySelect.value);
 
         removeError(countrySelect);
-
-        // Keep Country consistent with Nationality (Step 1).
         if (
-            nationalitySelect.value &&
-            config &&
-            countrySelect.value !== nationalitySelect.value
+            nationalitySelect.value && config && countrySelect.value !== nationalitySelect.value
         ) {
             countrySelect.value = nationalitySelect.value;
             refreshNiceSelect(countrySelect);
 
-            showError(
-                countrySelect,
-                "Country must match your nationality."
-            );
-
+            showError(countrySelect, "Country must match your nationality.");
             return;
         }
 
@@ -597,7 +503,6 @@ document.addEventListener("DOMContentLoaded", () => {
     stateSelect.addEventListener("change", () => {
         removeError(stateSelect);
 
-        // A valid state selection unlocks the address inputs.
         if (stateSelect.value) {
             if (cityInput) {
                 cityInput.readOnly = false;
@@ -613,51 +518,6 @@ document.addEventListener("DOMContentLoaded", () => {
         saveLocationStepIfAlreadySaved();
         updateReview();
     });
-
-    // cityInput.addEventListener("input", () => {
-    //     removeError(cityInput);
-
-    //     if (postalCodeInput) {
-    //         postalCodeInput.readOnly =
-    //             !stateSelect.value || !cityInput.value.trim();
-
-    //         if (postalCodeInput.readOnly) {
-    //             postalCodeInput.value = "";
-    //         }
-    //     }
-
-    //     saveLocationStepIfAlreadySaved();
-    //     updateReview();
-    // });
-
-    // postalCodeInput.addEventListener("input", () => {
-    //     removeError(postalCodeInput);
-    //     saveLocationStepIfAlreadySaved();
-    //     updateReview();
-    // });
-
-
-
-    // City -> postal code.
-    // cityInput.addEventListener("input", () => {
-    //     const hasCity = Boolean(cityInput.value.trim());
-
-    //     postalCodeInput.disabled = !hasCity;
-
-    //     if (!hasCity) {
-    //         postalCodeInput.value = "";
-    //         removeError(postalCodeInput);
-    //     }
-
-    //     saveLocationStepIfAlreadySaved();
-    //     updateReview();
-    // });
-
-    // postalCodeInput.addEventListener("input", () => {
-    //     saveLocationStepIfAlreadySaved();
-    //     updateReview();
-    // });
-
 
     cityInput.addEventListener("input", () => {
         removeError(cityInput);
@@ -685,7 +545,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-    // RESTORE ADDRESS DEPENDENCIES
     async function initializeLocationDependencies() {
         if (isRestoringLocation) return;
 
@@ -693,15 +552,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const savedForm = getSavedForm();
-            const savedAddress =
-                savedForm.completedSteps?.[3] || {};
-
-            const savedNationality =
-                nationalitySelect?.value || "";
-
-            // Step 1 is authoritative for the address country.
-            const savedCountry =
-                savedNationality || savedAddress.country || "";
+            const savedAddress = savedForm.completedSteps?.[3] || {};
+            const savedNationality = nationalitySelect?.value || "";
+            const savedCountry = savedNationality || savedAddress.country || "";
 
             if (countrySelect) {
                 countrySelect.value = savedCountry;
@@ -711,16 +564,11 @@ document.addEventListener("DOMContentLoaded", () => {
             resetStateAndAddress();
 
             const config = getCountryConfig(savedCountry);
-
             if (!config) {
                 return;
             }
 
-            // Load the state options before restoring dependent fields.
-            await loadStates(
-                config.name,
-                savedAddress.state || ""
-            );
+            await loadStates(config.name, savedAddress.state || "");
 
             if (stateSelect?.value) {
                 if (cityInput) {
@@ -729,15 +577,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 if (postalCodeInput) {
-                    postalCodeInput.value =
-                        savedAddress["postal-code"] || "";
-
-                    postalCodeInput.readOnly =
-                        !cityInput?.value.trim();
-
-                    // Keep the existing City -> Postal Code rule.
-                    postalCodeInput.disabled =
-                        !cityInput?.value.trim();
+                    postalCodeInput.value = savedAddress["postal-code"] || "";
+                    postalCodeInput.readOnly = !cityInput?.value.trim();
+                    postalCodeInput.disabled = !cityInput?.value.trim();
                 }
             }
 
@@ -745,13 +587,10 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshNiceSelect(stateSelect);
         } finally {
             isRestoringLocation = false;
-
-            // Save the fully restored values, not the temporary blanks.
             saveLocationStepIfAlreadySaved();
         }
     }
 
-    // CONDITIONAL FIELD HELPERS ----------
     function isFieldVisible(input) {
         const employmentOption = input.closest(".employment-status-option");
 
@@ -816,15 +655,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // EMPLOYMENT CONDITIONAL FIELDS ----------
     function clearInactiveEmploymentData(selectedValue) {
         if (!employmentStatus) return;
 
         const employmentStep = employmentStatus.closest(".form-step");
         const stepIndex = formSteps.indexOf(employmentStep);
-
         if (stepIndex === -1) return;
-
         const savedForm = getSavedForm();
         const stepNumber = stepIndex + 1;
         const savedStepData = savedForm.completedSteps[stepNumber] || {};
@@ -891,7 +727,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateGenericConditions();
     }
 
-    // VALIDATION ----------
     function validateStep() {
         const currentFormStep = formSteps[currentStep];
         const requiredFields = currentFormStep.querySelectorAll("[required]");
@@ -908,15 +743,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (input.type === "radio") {
 
-                const radioGroup = currentFormStep.querySelectorAll(`input[type="radio"][name="${input.name}"]`);
+                const radioGroup = currentFormStep.querySelectorAll(`input[type="radio"][name="${input.name} "]`);
                 const isSelected = [...radioGroup].some((radio) => radio.checked);
 
                 if (!isSelected) {
                     isValid = false;
                     showError(
                         input,
-                        "Please select an option."
-                    );
+                        "Please select an option.");
                 }
                 return;
             }
@@ -934,8 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     isValid = false;
                     showError(
                         input,
-                        "Please upload this document."
-                    );
+                        "Please upload this document.");
                 }
                 return;
             }
@@ -945,8 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     isValid = false;
                     showError(
                         input,
-                        "Please select an option."
-                    );
+                        "Please select an option.");
                 }
                 return;
             }
@@ -955,8 +787,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 isValid = false;
                 showError(
                     input,
-                    "This field is required."
-                );
+                    "This field is required.");
                 return;
             }
         });
@@ -964,11 +795,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const fields = currentFormStep.querySelectorAll("input, select, textarea");
         fields.forEach((input) => {
             if (
-                input.disabled ||
-                !isFieldVisible(input) ||
-                input.type === "radio" ||
-                input.type === "file" ||
-                input.tagName === "SELECT"
+                input.disabled || !isFieldVisible(input) || input.type === "radio" || input.type === "file" || input.tagName === "SELECT"
             ) {
                 return;
             }
@@ -982,7 +809,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 input.id === "first-name" ||
                 input.id === "last-name"
             ) {
-
                 const namePattern = /^[A-Za-zÀ-ÿ\s'-]+$/;
                 if (
                     !namePattern.test(value)
@@ -995,7 +821,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
             if (input.id === "phone") {
                 const countryMatches = isPhoneCountryMatchingNationality();
 
@@ -1003,8 +828,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     isValid = false;
                     showError(
                         input,
-                        "Your phone country must match your nationality."
-                    );
+                        "Your phone country must match your nationality.");
                     return;
                 }
 
@@ -1033,8 +857,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     isValid = false;
                     showError(
                         input,
-                        "Please enter a valid email address."
-                    );
+                        "Please enter a valid email address.");
                 }
             }
 
@@ -1045,15 +868,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     isValid = false;
                     showError(
                         input,
-                        "Please enter a valid postal code."
-                    );
+                        "Please enter a valid postal code.");
                 }
             }
 
-            if (
-                input.type === "number" &&
-                value !== ""
-            ) {
+            if (input.type === "number" && value !== "") {
                 const numberValue = Number(value);
                 if (Number.isNaN(numberValue)) {
                     isValid = false;
@@ -1099,7 +918,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ADDRESS COUNTRY MUST MATCH STEP 1 NATIONALITY
         if (currentStep === 2 && nationalitySelect && countrySelect) {
             const nationalityConfig = getCountryConfig(nationalitySelect.value);
             const addressCountryConfig = getCountryConfig(countrySelect.value);
@@ -1133,14 +951,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Radio
             if (input.type === "radio") {
                 if (input.checked) {
                     data[input.name] = input.value;
                 }
                 return;
             }
-            // File
+
             if (input.type === "file") {
                 if (input.files.length) {
                     const file = input.files[0];
@@ -1151,7 +968,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         fileType: file.type
                     };
                 }
-
                 return;
             }
 
@@ -1186,8 +1002,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         step.querySelectorAll('input[type="file"]').forEach((input) => {
             if (
-                !input.files.length &&
-                oldData[input.name]
+                !input.files.length && oldData[input.name]
             ) {
                 newData[input.name] = oldData[input.name];
             }
@@ -1249,7 +1064,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!input.name) {
                 return;
             }
-
 
             const savedValue = savedData[input.name];
 
@@ -1319,17 +1133,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         maxUnlockedStep = Number(savedForm.maxUnlockedStep) || 0;
         maxUnlockedStep = Math.max(
-            0,
-            Math.min(maxUnlockedStep, formSteps.length - 1)
+            0, Math.min(maxUnlockedStep, formSteps.length - 1)
         );
 
-        // Restore saved values for previously reached steps.
         for (let index = 0; index < maxUnlockedStep; index++) {
             restoreStep(index);
         }
 
-
-        // Restore the phone calling-code country from the saved nationality.
         const savedNationality = nationalitySelect?.value;
         const nationalityConfig = getCountryConfig(savedNationality);
 
@@ -1337,7 +1147,6 @@ document.addEventListener("DOMContentLoaded", () => {
             phoneInstance.setCountry(nationalityConfig.iso2);
         }
 
-        // Restore the exact step that was active before refresh.
         if (
             Number.isInteger(savedForm.currentStep) &&
             savedForm.currentStep >= 0 &&
@@ -1346,7 +1155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             currentStep = savedForm.currentStep;
         } else {
-            // Fallback for data saved before currentStep was added.
             currentStep = maxUnlockedStep;
         }
 
@@ -1418,10 +1226,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
-    // =========================================
-    // PROGRESS CLICK
-    // =========================================
     futureSteps.forEach((step, index) => {
         step.addEventListener("click", () => {
 
@@ -1445,10 +1249,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         );
     });
-
-    // =========================================
-    // CONTINUE BUTTON
-    // =========================================
 
     nextBtn.addEventListener("click", () => {
         if (!validateStep()) {
@@ -1475,9 +1275,6 @@ document.addEventListener("DOMContentLoaded", () => {
             savedForm.maxUnlockedStep = maxUnlockedStep;
             saveFormData(savedForm);
 
-
-
-
             const nextStepData = savedForm.completedSteps[currentStep + 1];
             if (nextStepData) {
                 restoreStep(currentStep);
@@ -1490,9 +1287,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // =========================================
-    // BACK BUTTON
-    // =========================================
     backBtn.addEventListener("click", () => {
         if (currentStep === 0) {
             return;
@@ -1505,9 +1299,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
-    // =========================================
-    // LIVE ERROR REMOVAL
-    // =========================================
     form.addEventListener("input", (event) => {
         const input = event.target;
         if (
@@ -1551,9 +1342,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // =========================================
-    // NICE SELECT OPTION CLICK
-    // =========================================
     form.addEventListener("click", (event) => {
         const option = event.target.closest(".nice-select .option");
         if (!option) {
@@ -1577,9 +1365,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // =========================================
-    // FILE CHANGE
-    // =========================================
     form.querySelectorAll('input[type="file"]').forEach((input) => {
         input.addEventListener("change", () => {
 
@@ -1599,9 +1384,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // =========================================
-    // REVIEW
-    // =========================================
     function getDisplayValue(input) {
 
         if (!input) {
@@ -1680,24 +1462,14 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/'/g, "&#039;");
     }
 
-    function addReviewRow(
-        tbody,
-        label,
-        selector
-    ) {
-
+    function addReviewRow(tbody, label, selector) {
         const input = document.querySelector(selector);
         if (!input) {
             return;
         }
 
         if (
-            input.closest(
-                ".employment-status-option"
-            ) &&
-            !input.closest(
-                ".employment-status-option"
-            ).classList.contains("show")
+            input.closest(".employment-status-option") && !input.closest(".employment-status-option").classList.contains("show")
         ) {
             return;
         }
@@ -1716,10 +1488,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (reviewBlocks.length < 3) {
             return;
         }
-
-        // =====================================
-        // PERSONAL DETAILS
-        // =====================================
 
         const personalBody = reviewBlocks[0].querySelector(".review-tbody");
 
@@ -1767,10 +1535,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "#male"
             );
         }
-
-        // =====================================
-        // EMPLOYMENT
-        // =====================================
 
         const employmentBody = reviewBlocks[1].querySelector(".review-tbody");
         if (employmentBody) {
@@ -1876,10 +1640,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-
-        // =====================================
-        // ADDRESS
-        // ===================================== 
         const addressBody = reviewBlocks[2].querySelector(".review-tbody");
         if (addressBody) {
             addressBody.innerHTML = "";
@@ -1927,11 +1687,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-
-        // =====================================
-        // DOCUMENTS
-        // =====================================
-
         const documentBody = reviewBlocks[3]?.querySelector(".review-tbody");
 
         if (documentBody) {
@@ -1975,46 +1730,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
-    // =========================================
-    // SUBMIT
-    // =========================================
     submitBtn.addEventListener("click", () => {
         updateReview();
 
-        // Make sure review step
-        // itself is displayed.
         if (
             currentStep !== formSteps.length - 1
         ) {
             return;
         }
 
-        // Final validation:
-        // all previously completed
-        // steps are already validated
-        // before Continue.
-        //
-        // Review itself has no required
-        // input fields.
-
-
-        // Clear saved application.
         sessionStorage.removeItem(
             STORAGE_KEY
         );
 
-        // Hide form/progress.
         document.querySelector(".future-step-wrapper").style.display = "none";
         form.style.display = "none";
 
-        // Show confirmation.
         confirmationMessage.classList.add("active");
     });
 
-    // =========================================
-    // START NEW APPLICATION
-    // =========================================
     if (startNewApplicationBtn) {
         startNewApplicationBtn.addEventListener("click", () => {
 
@@ -2059,10 +1793,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // =========================================
-    // INITIALIZE
-    // =========================================
-
     document.querySelectorAll(".document-input-field")
         .forEach((element) => {
             element.dataset.defaultText = element.textContent.trim();
@@ -2091,8 +1821,6 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshNiceSelect(select);
         });
     }
-
-
 
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation) return;
