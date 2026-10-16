@@ -342,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let stateRequestId = 0;
     let isRestoringLocation = false;
+    let hasPreparedLocationStep = false;
 
     async function loadStates(countryName, savedState = "") {
         const requestId = ++stateRequestId;
@@ -553,6 +554,47 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const savedForm = getSavedForm();
             const savedAddress = savedForm.completedSteps?.[3] || {};
+            if (!hasPreparedLocationStep) {
+                hasPreparedLocationStep = true;
+
+                const stepThreeCompleted = (savedForm.maxUnlockedStep || 0) >= 3;
+
+                if (!stepThreeCompleted) {
+                    const stepThree = formSteps[2];
+
+                    stepThree.querySelectorAll("input, select, textarea").forEach((input) => {
+                        if (
+                            input === countrySelect ||
+                            input === stateSelect ||
+                            input === cityInput ||
+                            input === postalCodeInput
+                        ) {
+                            return;
+                        }
+
+                        if (input.type === "radio" || input.type === "checkbox") {
+                            input.checked = false;
+                        } else if (input.type === "file") {
+                            input.value = "";
+
+                            const display = input.closest("label")?.querySelector(".document-input-field");
+
+                            if (display) {
+                                display.textContent = display.dataset.defaultText || "Upload document";
+                            }
+                        } else {
+                            input.value = "";
+                        }
+
+                        removeError(input);
+
+                        if (input.tagName === "SELECT") {
+                            refreshNiceSelect(input);
+                        }
+                    });
+                }
+            }
+
             const savedNationality = nationalitySelect?.value || "";
             const savedCountry = savedNationality || savedAddress.country || "";
 
@@ -587,7 +629,6 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshNiceSelect(stateSelect);
         } finally {
             isRestoringLocation = false;
-            saveLocationStepIfAlreadySaved();
         }
     }
 
@@ -1751,6 +1792,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (startNewApplicationBtn) {
         startNewApplicationBtn.addEventListener("click", () => {
+            stateRequestId++;
+            isRestoringLocation = false;
+            hasPreparedLocationStep = false;
 
             sessionStorage.removeItem(STORAGE_KEY);
 
@@ -1770,6 +1814,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 removeError(phoneInput);
             }
 
+            if (nationalitySelect) {
+                nationalitySelect.value = "";
+                refreshNiceSelect(nationalitySelect);
+            }
+
+            if (countrySelect) {
+                countrySelect.value = "";
+                countrySelect.disabled = false;
+                refreshNiceSelect(countrySelect);
+            }
+
+            if (stateSelect) {
+                stateSelect.replaceChildren();
+
+                const placeholder = document.createElement("option");
+                placeholder.value = "";
+                placeholder.textContent = "Select a country first";
+                placeholder.disabled = true;
+                placeholder.selected = true;
+
+                stateSelect.appendChild(placeholder);
+                stateSelect.value = "";
+                stateSelect.disabled = true;
+                refreshNiceSelect(stateSelect);
+            }
+
+            if (cityInput) {
+                cityInput.value = "";
+                cityInput.readOnly = true;
+            }
+
+            if (postalCodeInput) {
+                postalCodeInput.value = "";
+                postalCodeInput.readOnly = true;
+                postalCodeInput.disabled = true;
+            }
+
             formSteps.forEach((step) => {
                 removeStepErrors(step);
             });
@@ -1782,12 +1863,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
 
-            confirmationMessage.classList.remove("active");
+            updateEmploymentFields();
+            updateReview();
 
+            confirmationMessage.classList.remove("active");
             document.querySelector(".future-step-wrapper").style.display = "";
             form.style.display = "";
 
-            updateEmploymentFields();
             showStep(0);
             updateReview();
         });
@@ -1822,28 +1904,40 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation) return;
 
         const savedForm = getSavedForm();
         savedForm.completedSteps = savedForm.completedSteps || {};
+
         const previousAddress = savedForm.completedSteps[3];
+        const stepThreeAlreadyCompleted =
+            (savedForm.maxUnlockedStep || 0) >= 3;
 
         if (!previousAddress && currentStep !== 2) {
             return;
         }
 
         const addressData = {
-            ...(previousAddress || {}),
             country: countrySelect ? countrySelect.value : "",
             state: stateSelect ? stateSelect.value : "",
             city: cityInput ? cityInput.value : "",
             "postal-code": postalCodeInput ? postalCodeInput.value : ""
         };
 
-        savedForm.completedSteps[3] = addressData;
+        if (stepThreeAlreadyCompleted && previousAddress) {
+            savedForm.completedSteps[3] = {
+                ...previousAddress,
+                ...addressData
+            };
+        } else {
+            savedForm.completedSteps[3] = addressData;
+        }
+
         saveFormData(savedForm);
     }
+
 });
 
 document.addEventListener("input", function (event) {
