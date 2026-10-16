@@ -342,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let stateRequestId = 0;
     let isRestoringLocation = false;
+    let hasPreparedLocationStep = false;
 
     async function loadStates(countryName, savedState = "") {
         const requestId = ++stateRequestId;
@@ -545,6 +546,38 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
+    function saveLocationStepIfAlreadySaved() {
+        if (isRestoringLocation || currentStep !== 2) {
+            return;
+        }
+
+        const savedForm = getSavedForm();
+        savedForm.completedSteps = savedForm.completedSteps || {};
+        const addressData = {
+            country: countrySelect?.value || "",
+            state: stateSelect?.value || "",
+            city: cityInput?.value || "",
+            "postal-code": postalCodeInput?.value || ""
+        };
+
+        const stepThreeCompleted =
+            (Number(savedForm.maxUnlockedStep) || 0) >= 3;
+
+        if (stepThreeCompleted) {
+            savedForm.completedSteps[3] = {
+                ...(savedForm.completedSteps[3] || {}),
+                ...addressData
+            };
+        } else {
+            savedForm.locationDraft = {
+                ...(savedForm.locationDraft || {}),
+                ...addressData
+            };
+        }
+
+        saveFormData(savedForm);
+    }
+
     async function initializeLocationDependencies() {
         if (isRestoringLocation) return;
 
@@ -552,7 +585,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const savedForm = getSavedForm();
-            const savedAddress = savedForm.completedSteps?.[3] || {};
+            const stepThreeCompleted =
+                (Number(savedForm.maxUnlockedStep) || 0) >= 3;
+
+            const savedAddress = stepThreeCompleted
+                ? (savedForm.completedSteps?.[3] || {})
+                : (savedForm.locationDraft || {});
+
+            if (!hasPreparedLocationStep) {
+                hasPreparedLocationStep = true;
+
+                if (!stepThreeCompleted) {
+                    clearUncommittedStepThreeFields();
+                }
+            }
+
+            // Nationality determines the address country.
             const savedNationality = nationalitySelect?.value || "";
             const savedCountry = savedNationality || savedAddress.country || "";
 
@@ -564,9 +612,8 @@ document.addEventListener("DOMContentLoaded", () => {
             resetStateAndAddress();
 
             const config = getCountryConfig(savedCountry);
-            if (!config) {
-                return;
-            }
+
+            if (!config) return;
 
             await loadStates(config.name, savedAddress.state || "");
 
@@ -578,17 +625,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (postalCodeInput) {
                     postalCodeInput.value = savedAddress["postal-code"] || "";
-                    postalCodeInput.readOnly = !cityInput?.value.trim();
-                    postalCodeInput.disabled = !cityInput?.value.trim();
+
+                    const canEnterPostalCode =
+                        Boolean(cityInput?.value.trim());
+
+                    postalCodeInput.disabled = !canEnterPostalCode;
+                    postalCodeInput.readOnly = !canEnterPostalCode;
                 }
             }
 
             refreshNiceSelect(countrySelect);
             refreshNiceSelect(stateSelect);
+        } catch (error) {
+            console.error("Address restoration failed:", error);
         } finally {
             isRestoringLocation = false;
-            saveLocationStepIfAlreadySaved();
         }
+    }
+
+    function clearUncommittedStepThreeFields() {
+        if (!formSteps[2]) return;
+
+        formSteps[2].querySelectorAll("input, select, textarea").forEach((field) => {
+            // Keep these three address fields unchanged.
+            if (
+                field === stateSelect ||
+                field === cityInput ||
+                field === postalCodeInput
+            ) {
+                return;
+            }
+
+            if (field.type === "radio" || field.type === "checkbox") {
+                field.checked = false;
+            } else if (field.type === "file") {
+                field.value = "";
+            } else {
+                field.value = "";
+            }
+
+            field.classList.remove("error", "is-invalid");
+
+            const errorMessage = field.parentElement?.querySelector(".error-message");
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        });
+
+        formSteps[2].querySelectorAll("select").forEach((select) => {
+            refreshNiceSelect(select);
+        });
     }
 
     function isFieldVisible(input) {
@@ -743,7 +829,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (input.type === "radio") {
 
-                const radioGroup = currentFormStep.querySelectorAll(`input[type="radio"][name="${input.name} "]`);
+                const radioGroup = currentFormStep.querySelectorAll(
+                    `input[type="radio"][name="${input.name}"]`
+                );
                 const isSelected = [...radioGroup].some((radio) => radio.checked);
 
                 if (!isSelected) {
@@ -1008,6 +1096,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
         savedForm.completedSteps[stepIndex + 1] = newData;
+
+        if (stepIndex === 2) {
+            delete savedForm.locationDraft;
+        }
         savedForm.maxUnlockedStep = Math.max(
             savedForm.maxUnlockedStep || 0,
             stepIndex + 1
@@ -1751,12 +1843,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (startNewApplicationBtn) {
         startNewApplicationBtn.addEventListener("click", () => {
+            stateRequestId++;
+            isRestoringLocation = false;
+            hasPreparedLocationStep = false;
 
             sessionStorage.removeItem(STORAGE_KEY);
 
             currentStep = 0;
             maxUnlockedStep = 0;
-
             formSteps.forEach((_, index) => {
                 clearStep(index);
             });
@@ -1822,28 +1916,35 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation) return;
 
         const savedForm = getSavedForm();
-        savedForm.completedSteps = savedForm.completedSteps || {};
-        const previousAddress = savedForm.completedSteps[3];
 
-        if (!previousAddress && currentStep !== 2) {
+        const stepThreeCompleted =
+            (Number(savedForm.maxUnlockedStep) || 0) >= 3;
+
+        // Save while editing Step 3, or after Step 3 has been completed.
+        if (!stepThreeCompleted && currentStep !== 2) {
             return;
         }
 
-        const addressData = {
-            ...(previousAddress || {}),
-            country: countrySelect ? countrySelect.value : "",
-            state: stateSelect ? stateSelect.value : "",
-            city: cityInput ? cityInput.value : "",
-            "postal-code": postalCodeInput ? postalCodeInput.value : ""
+        savedForm.completedSteps = savedForm.completedSteps || {};
+
+        const previousAddress = savedForm.completedSteps[3] || {};
+
+        savedForm.completedSteps[3] = {
+            ...previousAddress,
+            country: countrySelect?.value || "",
+            state: stateSelect?.value || "",
+            city: cityInput?.value || "",
+            "postal-code": postalCodeInput?.value || ""
         };
 
-        savedForm.completedSteps[3] = addressData;
         saveFormData(savedForm);
     }
+
 });
 
 document.addEventListener("input", function (event) {
