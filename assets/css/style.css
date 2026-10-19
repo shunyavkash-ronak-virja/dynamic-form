@@ -118,12 +118,6 @@
   grid-template-columns: repeat(1, 1fr);
 }
 
-.input-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .gender-wrapper {
   display: flex;
   align-items: center;
