@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-
     function cleanSavedEmploymentData() {
         if (!employmentStatus) return;
 
@@ -99,9 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (input.type === "file") {
             const fileLabel = input.closest("label");
             if (fileLabel) {
-                return fileLabel.querySelector(
-                    ".document-input-field"
-                );
+                return fileLabel.querySelector(".document-input-field");
             }
         }
         return input;
@@ -136,9 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const errorElement = getErrorElement(input);
         if (errorElement) {
-            errorElement.classList.remove(
-                "input-error-field"
-            );
+            errorElement.classList.remove("input-error-field");
         }
 
         const errorMessage = inputStack.querySelector(".input-error");
@@ -148,9 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function removeStepErrors(step) {
-        step.querySelectorAll(
-            "input, select, textarea"
-        ).forEach((input) => {
+        step.querySelectorAll("input, select, textarea").forEach((input) => {
             removeError(input);
         });
     }
@@ -585,8 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const savedForm = getSavedForm();
-            const stepThreeCompleted =
-                (Number(savedForm.maxUnlockedStep) || 0) >= 3;
+            const stepThreeCompleted = (Number(savedForm.maxUnlockedStep) || 0) >= 3;
 
             const savedAddress = stepThreeCompleted
                 ? (savedForm.completedSteps?.[3] || {})
@@ -600,7 +592,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Nationality determines the address country.
             const savedNationality = nationalitySelect?.value || "";
             const savedCountry = savedNationality || savedAddress.country || "";
 
@@ -608,7 +599,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 countrySelect.value = savedCountry;
                 refreshNiceSelect(countrySelect);
             }
-
             resetStateAndAddress();
 
             const config = getCountryConfig(savedCountry);
@@ -626,8 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (postalCodeInput) {
                     postalCodeInput.value = savedAddress["postal-code"] || "";
 
-                    const canEnterPostalCode =
-                        Boolean(cityInput?.value.trim());
+                    const canEnterPostalCode = Boolean(cityInput?.value.trim());
 
                     postalCodeInput.disabled = !canEnterPostalCode;
                     postalCodeInput.readOnly = !canEnterPostalCode;
@@ -647,7 +636,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!formSteps[2]) return;
 
         formSteps[2].querySelectorAll("input, select, textarea").forEach((field) => {
-            // Keep these three address fields unchanged.
             if (
                 field === stateSelect ||
                 field === cityInput ||
