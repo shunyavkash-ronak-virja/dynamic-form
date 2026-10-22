@@ -4,6 +4,36 @@ $(document).ready(function () {
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector(".form-step-wrapper");
     const formSteps = [...document.querySelectorAll(".form-step")];
+
+    const nonNegativeFields = [
+        document.getElementById("years-experience"),
+        document.getElementById("business-years"),
+        document.getElementById("graduation-year")
+    ].filter(Boolean);
+
+    nonNegativeFields.forEach((input) => {
+        input.min = "0";
+
+        input.addEventListener("keydown", (event) => {
+            if (
+                event.key === "-" ||
+                event.code === "NumpadSubtract"
+            ) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener("input", () => {
+            if (input.value.startsWith("-") || Number(input.value) < 0) {
+                input.value = "";
+            }
+        });
+
+
+        if (input.value.startsWith("-") || Number(input.value) < 0) {
+            input.value = "";
+        }
+    });
     const futureSteps = [...document.querySelectorAll(".future-step-stack")];
     const backBtn = document.querySelector(".back-btn");
     const nextBtn = document.querySelector(".next-btn");
@@ -648,9 +678,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (input.type === "number" && value !== "") {
                 const numberValue = Number(value);
-                if (Number.isNaN(numberValue)) {
-                    isValid = !1;
+
+                if (!Number.isFinite(numberValue)) {
+                    isValid = false;
                     showError(input, "Please enter a valid number.");
+                } else if (numberValue < 0) {
+                    isValid = false;
+                    showError(input, "Negative values are not allowed.");
+                } else if (!input.validity.valid) {
+                    isValid = false;
+                    showError(input, "Please enter a valid value.");
                 }
             }
             if (input.type === "date") {
@@ -859,13 +896,16 @@ document.addEventListener("DOMContentLoaded", () => {
         saveFormData(savedForm);
         futureSteps.forEach((step, index) => {
             step.classList.remove("active", "complete");
-            if (index < maxUnlockedStep) {
-                step.classList.add("active", "complete");
-            }
-            if (index === stepIndex) {
+
+            if (index <= maxUnlockedStep) {
                 step.classList.add("active");
             }
+
+            if (index < maxUnlockedStep) {
+                step.classList.add("complete");
+            }
         });
+
         if (stepIndex === 0) {
             backBtn.classList.remove("active");
         } else {
