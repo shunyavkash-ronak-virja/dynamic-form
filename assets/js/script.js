@@ -894,16 +894,23 @@ document.addEventListener("DOMContentLoaded", () => {
         savedForm.currentStep = stepIndex;
         savedForm.maxUnlockedStep = maxUnlockedStep;
         saveFormData(savedForm);
+
         futureSteps.forEach((step, index) => {
-            step.classList.remove("active", "complete");
+            const stepBlock = step.classList.contains("future-step-block") ? step : step.querySelector(".future-step-block");
+
+            stepBlock?.classList.remove("current");
 
             if (index <= maxUnlockedStep) {
                 step.classList.add("active");
+            } else {
+                step.classList.remove("active");
             }
 
-            if (index < maxUnlockedStep) {
-                step.classList.add("complete");
-            }
+            step.classList.toggle("complete", index < maxUnlockedStep);
+
+            // if (index === stepIndex) {
+            //     stepBlock?.classList.add("current");
+            // }
         });
 
         if (stepIndex === 0) {
