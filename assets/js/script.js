@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $("select").niceSelect();
 });
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector(".form-step-wrapper");
     const formSteps = [...document.querySelectorAll(".form-step")];
@@ -16,24 +17,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
         input.addEventListener("keydown", (event) => {
             if (
+                event.key === "+" ||
                 event.key === "-" ||
+                event.code === "NumpadAdd" ||
                 event.code === "NumpadSubtract"
             ) {
                 event.preventDefault();
             }
         });
 
-        input.addEventListener("input", () => {
-            if (input.value.startsWith("-") || Number(input.value) < 0) {
-                input.value = "";
+        input.addEventListener("paste", (event) => {
+            const pastedText = event.clipboardData?.getData("text") || "";
+
+            if (/[+-]/.test(pastedText)) {
+                event.preventDefault();
+                showError(input, "Plus (+) and minus (-) signs are not allowed.");
             }
         });
 
+        input.addEventListener("input", () => {
+            const value = input.value.trim();
 
-        if (input.value.startsWith("-") || Number(input.value) < 0) {
-            input.value = "";
+            if (/[+-]/.test(value)) {
+                showError(
+                    input,
+                    "Plus (+) and minus (-) signs are not allowed."
+                );
+                return;
+            }
+
+            if (value !== "" && !/^\d+(\.\d+)?$/.test(value)) {
+                showError(input, "Please enter a valid non-negative number.");
+                return;
+            }
+
+            if (value !== "" && Number(value) < 0) {
+                showError(input, "Negative values are not allowed.");
+                return;
+            }
+
+            removeError(input);
+        });
+
+        const initialValue = input.value.trim();
+
+        if (/[+-]/.test(initialValue)) {
+            showError(input, "Plus (+) and minus (-) signs are not allowed.");
+        } else if (
+            initialValue !== "" &&
+            !/^\d+(\.\d+)?$/.test(initialValue)
+        ) {
+            showError(input, "Please enter a valid non-negative number.");
         }
     });
+
     const futureSteps = [...document.querySelectorAll(".future-step-stack")];
     const backBtn = document.querySelector(".back-btn");
     const nextBtn = document.querySelector(".next-btn");
@@ -733,18 +770,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 showError(genderInputs[0], "Please select your gender.");
             }
         }
-        if (currentStep === 2 && nationalitySelect && countrySelect) {
-            const nationalityConfig = getCountryConfig(nationalitySelect.value);
-            const addressCountryConfig = getCountryConfig(countrySelect.value);
-            const countriesMatch =
-                nationalityConfig && addressCountryConfig && nationalityConfig.iso2 === addressCountryConfig.iso2;
-            if (!countriesMatch) {
-                isValid = !1;
-                showError(countrySelect, "Country must match your nationality.");
-            } else {
-                removeError(countrySelect);
+        if (currentStep === 2) {
+            if (cityInput && !cityInput.value.trim()) {
+                isValid = false;
+                showError(cityInput, "City is required.");
+            } else if (cityInput) {
+                removeError(cityInput);
+            }
+
+            if (postalCodeInput && !postalCodeInput.value.trim()) {
+                isValid = false;
+                showError(postalCodeInput, "Postal Code is required.");
+            } else if (postalCodeInput && postalCodeInput.value.trim()) {
+                const postalCodePattern = /^[A-Za-z0-9][A-Za-z0-9\s-]{2,9}$/;
+
+                if (!postalCodePattern.test(postalCodeInput.value.trim())) {
+                    isValid = false;
+                    showError(postalCodeInput, "Please enter a valid postal code.");
+                } else {
+                    removeError(postalCodeInput);
+                }
+            }
+
+            if (nationalitySelect && countrySelect) {
+                const nationalityConfig = getCountryConfig(nationalitySelect.value);
+                const addressCountryConfig = getCountryConfig(countrySelect.value);
+
+                const countriesMatch =
+                    nationalityConfig &&
+                    addressCountryConfig &&
+                    nationalityConfig.iso2 === addressCountryConfig.iso2;
+
+                if (!countriesMatch) {
+                    isValid = false;
+                    showError(countrySelect, "Country must match your nationality.");
+                } else {
+                    removeError(countrySelect);
+                }
             }
         }
+
         return isValid;
     }
     function collectStepData(stepIndex) {
@@ -959,11 +1024,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (index > maxUnlockedStep) {
                 return;
             }
+
+            if (index > currentStep && !validateStep()) {
+                return;
+            }
+
             if (index !== currentStep) {
                 restoreStep(currentStep);
                 currentStep = index;
                 restoreStep(currentStep);
             }
+
             showStep(currentStep);
             updateReview();
         });
