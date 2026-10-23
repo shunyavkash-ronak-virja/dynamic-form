@@ -427,6 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReview();
     });
 
+
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation || currentStep !== 2) {
             return;
@@ -434,6 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const savedForm = getSavedForm();
         savedForm.completedSteps = savedForm.completedSteps || {};
+
         const stepThreeCompleted = (Number(savedForm.maxUnlockedStep) || 0) >= 3;
 
         if (!stepThreeCompleted) {
@@ -442,20 +444,29 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const previousAddress = savedForm.completedSteps[3] || {};
+
         const addressData = {
             country: countrySelect?.value || "",
             state: stateSelect?.value || "",
-            city: cityInput?.value || "",
-            "postal-code": postalCodeInput?.value || ""
+
+            city: cityInput?.value.trim()
+                ? cityInput.value
+                : previousAddress.city || "",
+
+            "postal-code": postalCodeInput?.value.trim()
+                ? postalCodeInput.value
+                : previousAddress["postal-code"] || ""
         };
 
         savedForm.completedSteps[3] = {
-            ...(savedForm.completedSteps[3] || {}),
+            ...previousAddress,
             ...addressData
         };
 
         saveFormData(savedForm);
     }
+
     async function initializeLocationDependencies() {
         if (isRestoringLocation) return;
         isRestoringLocation = !0;
@@ -929,6 +940,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (input.type === "radio") {
                 input.checked = savedValue === input.value;
+                removeError(input);
                 return;
             }
             if (input.type === "file") {
@@ -943,6 +955,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             input.value = savedValue;
+            removeError(input);
             if (input.tagName === "SELECT" && typeof $ !== "undefined") {
                 $(input).niceSelect("update");
             }
