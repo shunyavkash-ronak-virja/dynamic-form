@@ -993,13 +993,15 @@ document.addEventListener("DOMContentLoaded", () => {
         formSteps.forEach((step, index) => {
             step.classList.toggle("active", index === stepIndex);
         });
+
         const savedForm = getSavedForm();
         savedForm.currentStep = stepIndex;
         savedForm.maxUnlockedStep = maxUnlockedStep;
         saveFormData(savedForm);
 
         futureSteps.forEach((step, index) => {
-            const stepBlock = step.classList.contains("future-step-block") ? step : step.querySelector(".future-step-block");
+            const stepBlock = step.classList.contains("future-step-block")
+                ? step : step.querySelector(".future-step-block");
 
             stepBlock?.classList.remove("current");
 
@@ -1011,9 +1013,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             step.classList.toggle("complete", index < maxUnlockedStep);
 
-            // if (index === stepIndex) {
-            //     stepBlock?.classList.add("current");
-            // }
+            if (index === stepIndex) {
+                stepBlock?.classList.add("current");
+            }
+
+            const stack = step.closest(".future-step-stack");
+
+            if (stack && stack.querySelector(".future-step-block.current")) {
+                stack.classList.remove("complete");
+            }
         });
 
         if (stepIndex === 0) {
@@ -1021,6 +1029,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             backBtn.classList.add("active");
         }
+
         if (stepIndex === formSteps.length - 1) {
             nextBtn.style.display = "none";
             submitBtn.classList.add("active");
@@ -1028,6 +1037,7 @@ document.addEventListener("DOMContentLoaded", () => {
             nextBtn.style.display = "";
             submitBtn.classList.remove("active");
         }
+
         if (stepIndex === 2) {
             initializeLocationDependencies();
         }
