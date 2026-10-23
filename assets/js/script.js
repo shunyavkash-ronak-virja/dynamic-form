@@ -389,24 +389,34 @@ document.addEventListener("DOMContentLoaded", () => {
         saveLocationStepIfAlreadySaved();
         updateReview();
     });
+
     function saveLocationStepIfAlreadySaved() {
         if (isRestoringLocation || currentStep !== 2) {
             return;
         }
+
         const savedForm = getSavedForm();
         savedForm.completedSteps = savedForm.completedSteps || {};
+        const stepThreeCompleted = (Number(savedForm.maxUnlockedStep) || 0) >= 3;
+
+        if (!stepThreeCompleted) {
+            delete savedForm.locationDraft;
+            saveFormData(savedForm);
+            return;
+        }
+
         const addressData = {
             country: countrySelect?.value || "",
             state: stateSelect?.value || "",
             city: cityInput?.value || "",
-            "postal-code": postalCodeInput?.value || "",
+            "postal-code": postalCodeInput?.value || ""
         };
-        const stepThreeCompleted = (Number(savedForm.maxUnlockedStep) || 0) >= 3;
-        if (stepThreeCompleted) {
-            savedForm.completedSteps[3] = { ...(savedForm.completedSteps[3] || {}), ...addressData };
-        } else {
-            savedForm.locationDraft = { ...(savedForm.locationDraft || {}), ...addressData };
-        }
+
+        savedForm.completedSteps[3] = {
+            ...(savedForm.completedSteps[3] || {}),
+            ...addressData
+        };
+
         saveFormData(savedForm);
     }
     async function initializeLocationDependencies() {
@@ -415,9 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const savedForm = getSavedForm();
             const stepThreeCompleted = (Number(savedForm.maxUnlockedStep) || 0) >= 3;
-            const savedAddress = stepThreeCompleted
-                ? savedForm.completedSteps?.[3] || {}
-                : savedForm.locationDraft || {};
+            const savedAddress = stepThreeCompleted ? savedForm.completedSteps?.[3] || {} : {};
             if (!hasPreparedLocationStep) {
                 hasPreparedLocationStep = !0;
                 if (!stepThreeCompleted) {
@@ -455,28 +463,45 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     function clearUncommittedStepThreeFields() {
-        if (!formSteps[2]) return;
-        formSteps[2].querySelectorAll("input, select, textarea").forEach((field) => {
-            if (field === stateSelect || field === cityInput || field === postalCodeInput) {
-                return;
-            }
+        const step = formSteps[2];
+        if (!step) return;
+
+        step.querySelectorAll("input, select, textarea").forEach((field) => {
             if (field.type === "radio" || field.type === "checkbox") {
-                field.checked = !1;
+                field.checked = false;
             } else if (field.type === "file") {
                 field.value = "";
+
+                const display = field.closest("label")?.querySelector(".document-input-field");
+
+                if (display) {
+                    display.textContent = display.dataset.defaultText || "Upload document";
+                }
             } else {
                 field.value = "";
             }
+
+            removeError(field);
             field.classList.remove("error", "is-invalid");
+
             const errorMessage = field.parentElement?.querySelector(".error-message");
+
             if (errorMessage) {
                 errorMessage.remove();
             }
+
+            if (field.tagName === "SELECT") {
+                refreshNiceSelect(field);
+            }
         });
-        formSteps[2].querySelectorAll("select").forEach((select) => {
-            refreshNiceSelect(select);
-        });
+
+        resetStateAndAddress();
+
+        const savedForm = getSavedForm();
+        delete savedForm.locationDraft;
+        saveFormData(savedForm);
     }
+
     function isFieldVisible(input) {
         const employmentOption = input.closest(".employment-status-option");
         if (employmentOption && !employmentOption.classList.contains("show")) {
