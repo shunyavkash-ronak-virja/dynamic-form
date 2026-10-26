@@ -150,9 +150,14 @@
 .input-field[type="file"] {
   display: none;
 }
+.document-input {
+  min-width: 0;
+}
 .document-input-field {
   position: relative;
   padding-right: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .document-input-field::after {
   content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload preview-icon"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>');
@@ -163,6 +168,7 @@
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
+  background-color: white;
 }
 .review-table-block {
   padding-inline: 16px;
