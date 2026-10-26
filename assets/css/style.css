@@ -150,9 +150,6 @@
 .input-field[type="file"] {
   display: none;
 }
-.document-input {
-  min-width: 0;
-}
 .document-input-field {
   position: relative;
   padding-right: 40px;
